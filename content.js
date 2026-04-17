@@ -58,6 +58,20 @@
     return true;
   }
 
+  // Per-block link density cache. For a given block-level container
+  // (paragraph, list item, etc.) the fraction of its text that lives
+  // inside <a> tags. High values mean "this block is mostly links" —
+  // feeds, tag clouds, "In the news" bullets — which should be skipped.
+  const BLOCK_SELECTOR = 'p, li, blockquote, dd, dt, figcaption, h1, h2, h3, h4, h5, h6';
+  const BLOCK_LINK_DENSITY_MAX = 0.6;
+  const densityCache = new WeakMap();
+  function blockDensity(el) {
+    if (densityCache.has(el)) return densityCache.get(el);
+    const d = linkDensity(el);
+    densityCache.set(el, d);
+    return d;
+  }
+
   function shouldProcessParent(el) {
     if (!el) return false;
     if (SKIP_TAGS.has(el.tagName)) return false;
@@ -66,6 +80,8 @@
     if (el.closest('[contenteditable="true"]')) return false;
     if (el.closest(SKIP_ROLES_SELECTOR)) return false;
     if (el.closest('nav, aside, footer')) return false;
+    const block = el.closest(BLOCK_SELECTOR);
+    if (block && blockDensity(block) > BLOCK_LINK_DENSITY_MAX) return false;
     const fontSize = parseFloat(getComputedStyle(el).fontSize);
     if (!isFinite(fontSize)) return false;
     if (fontSize < effective.fontSizeThreshold) return false;
