@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>BionicRead</title>
+<title>FocusRead</title>
 <style>
   :root {
     --bg: #111;
@@ -151,6 +151,16 @@
     transition: opacity 0.15s;
   }
   .dot.on { opacity: 1; }
+  .preview {
+    background: #181818;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #ccc;
+  }
+  .preview b { color: #fff; font-weight: 700; }
   .select {
     background: #1a1a1a;
     color: var(--fg);
@@ -166,7 +176,9 @@
 </head>
 <body>
 <div class="wrap">
-  <h1><b>Bion</b>icRead</h1>
+  <h1><b>Foc</b>us<b>Re</b>ad</h1>
+
+  <div class="preview" id="preview"></div>
 
   <div class="row">
     <div class="col">
@@ -314,6 +326,7 @@
     </select>
   </div>
 </div>
+<script src="core.js"></script>
 <script src="popup.js"></script>
 </body>
 </html>

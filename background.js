@@ -30,7 +30,28 @@ chrome.runtime.onInstalled.addListener(async () => {
   await chrome.storage.sync.set(merged);
 });
 
-// Intercept PDF navigations and send them through the BionicRead viewer.
+// Keyboard shortcut: toggle the per-site enabled flag for the active tab.
+// Flipping siteSettings[host].enabled is picked up by the content script's
+// storage.onChanged listener and applied without a reload.
+chrome.commands?.onCommand.addListener(async (command) => {
+  if (command !== 'toggle-site') return;
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.url) return;
+  let host;
+  try {
+    const u = new URL(tab.url);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return;
+    host = u.hostname;
+  } catch {
+    return;
+  }
+  const { siteSettings = {} } = await chrome.storage.sync.get({ siteSettings: {} });
+  const site = siteSettings[host] || {};
+  const next = { ...site, enabled: site.enabled === false };
+  await chrome.storage.sync.set({ siteSettings: { ...siteSettings, [host]: next } });
+});
+
+// Intercept PDF navigations and send them through the FocusRead viewer.
 // Only fires when the user has opted in via openPdfsInViewer. We match
 // `.pdf` URLs by extension (and common query-string variants). The
 // viewer's "View original" button is how users escape.

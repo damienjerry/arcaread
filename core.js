@@ -1,13 +1,13 @@
-// BionicRead — portable core transformation.
+// FocusRead — portable core transformation.
 // No DOM, no browser APIs, no dependencies. Safe to import from a content
 // script, a Node CLI, a React Native shell, a Deno script, etc.
 //
 // Public surface:
-//   BionicCore.transform(text, settings) -> { segments, modified }
-//   BionicCore.toHtml(segments)          -> string (convenience for web)
-//   BionicCore.boldPrefixLength(word, settings) -> number
-//   BionicCore.tokenize(text)            -> token[]
-//   BionicCore.DEFAULT_SETTINGS
+//   FocusCore.transform(text, settings) -> { segments, modified }
+//   FocusCore.toHtml(segments)          -> string (convenience for web)
+//   FocusCore.boldPrefixLength(word, settings) -> number
+//   FocusCore.tokenize(text)            -> token[]
+//   FocusCore.DEFAULT_SETTINGS
 //
 // A "segment" is { text: string, bold: boolean }. Each platform shell
 // renders segments in whatever form it wants (HTML <b>, NSAttributedString,
@@ -19,7 +19,7 @@
     module.exports = mod;
   }
   if (root) {
-    root.BionicCore = mod;
+    root.FocusCore = mod;
   }
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';

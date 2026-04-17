@@ -1,6 +1,6 @@
 // PDF reader: fetches the PDF at ?file=<url>, extracts per-page text with
 // pdf.js, groups lines into paragraphs by vertical gap, and renders each
-// paragraph with BionicCore.transform applied. Not a perfect clone of the
+// paragraph with FocusCore.transform applied. Not a perfect clone of the
 // PDF's layout — this is a reading view, not a document viewer.
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL('vendor/pdf.worker.min.js');
@@ -92,10 +92,10 @@ function itemsToParagraphs(items) {
 }
 
 function renderParagraph(text, settings) {
-  const { segments } = BionicCore.transform(text, settings);
+  const { segments } = FocusCore.transform(text, settings);
   const p = document.createElement('p');
   p.className = 'para';
-  p.innerHTML = BionicCore.toHtml(segments);
+  p.innerHTML = FocusCore.toHtml(segments);
   return p;
 }
 

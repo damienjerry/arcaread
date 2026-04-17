@@ -32,6 +32,17 @@ let data = null;
 
 function $(id) { return document.getElementById(id); }
 
+const SAMPLE_TEXT =
+  'Reading is a conversation with an author. The first half of each word often carries most of its identity.';
+
+function renderPreview() {
+  const { segments } = FocusCore.transform(SAMPLE_TEXT, {
+    minWordLength: effectiveValue('minWordLength'),
+    intensity: effectiveValue('intensity')
+  });
+  $('preview').innerHTML = FocusCore.toHtml(segments);
+}
+
 async function getCurrentHostname() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -145,6 +156,7 @@ function render() {
   $('readingFont').value = font;
   $('readingFont').disabled = !hostname;
 
+  renderPreview();
   updateOverrideIndicator();
 }
 
@@ -169,6 +181,7 @@ async function init() {
     const v = parseInt(e.target.value, 10);
     $('minWordLengthVal').textContent = v;
     writeSiteOverride('minWordLength', v);
+    renderPreview();
   });
 
   $('fontSizeThreshold').addEventListener('input', (e) => {
@@ -187,6 +200,7 @@ async function init() {
     const pct = parseInt(e.target.value, 10);
     $('intensityVal').textContent = pct;
     writeSiteOverride('intensity', pct / 100);
+    renderPreview();
   });
 
   $('dyslexiaMode').addEventListener('change', async (e) => {

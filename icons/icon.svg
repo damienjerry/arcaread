@@ -1,0 +1,18 @@
+<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <rect width="128" height="128" rx="28" fill="#101614"/>
+  <!-- F constructed from rectangles (no font dependency).
+       Horizontal bars have a solid-left + faded-right split to echo
+       the bionic bolding concept in the icon itself. -->
+  <g fill="#7DCFA6">
+    <!-- vertical stem -->
+    <rect x="36" y="28" width="22" height="72" rx="2"/>
+    <!-- top bar: solid then faded -->
+    <rect x="36" y="28" width="38" height="18" rx="2"/>
+    <!-- middle bar: solid then faded -->
+    <rect x="36" y="56" width="28" height="16" rx="2"/>
+  </g>
+  <g fill="#7DCFA6" fill-opacity="0.4">
+    <rect x="74" y="28" width="24" height="18" rx="2"/>
+    <rect x="64" y="56" width="14" height="16" rx="2"/>
+  </g>
+</svg>

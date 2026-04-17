@@ -25,8 +25,8 @@
   ]);
   const SKIP_ROLES_SELECTOR =
     '[role="navigation"],[role="complementary"],[role="banner"],[role="search"],[role="contentinfo"],[role="menu"],[role="menubar"],[role="tablist"]';
-  const PROCESSED_CLASS = 'bionic-processed';
-  const ORIGINAL_ATTR = 'data-bionic-original';
+  const PROCESSED_CLASS = 'focusread-processed';
+  const ORIGINAL_ATTR = 'data-focusread-original';
 
   let settings = { ...DEFAULTS };
   let effective = { ...DEFAULTS };
@@ -98,7 +98,7 @@
     const text = node.nodeValue;
     if (!text || !text.trim()) return;
 
-    const { segments, modified } = BionicCore.transform(text, {
+    const { segments, modified } = FocusCore.transform(text, {
       minWordLength: effective.minWordLength,
       intensity: effective.intensity
     });
@@ -107,7 +107,7 @@
     const wrapper = document.createElement('span');
     wrapper.className = PROCESSED_CLASS;
     wrapper.setAttribute(ORIGINAL_ATTR, text);
-    wrapper.innerHTML = BionicCore.toHtml(segments);
+    wrapper.innerHTML = FocusCore.toHtml(segments);
     parent.replaceChild(wrapper, node);
   }
 
@@ -212,7 +212,7 @@
     return best;
   }
 
-  const DYSLEXIA_STYLE_ID = 'bionic-dyslexia-style';
+  const DYSLEXIA_STYLE_ID = 'focusread-style';
 
   // Combined style injector for dyslexia spacing + reading font. Uses
   // a low-specificity rule on <html> so values inherit through prose
@@ -226,9 +226,9 @@
     if (effective.readingFont === 'lexend') {
       const fontUrl = chrome.runtime.getURL('fonts/Lexend-Variable.ttf');
       rules.push(
-        `@font-face { font-family: 'BionicRead-Lexend'; src: url("${fontUrl}") format('truetype-variations'); font-weight: 100 900; font-display: swap; }`
+        `@font-face { font-family: 'FocusRead-Lexend'; src: url("${fontUrl}") format('truetype-variations'); font-weight: 100 900; font-display: swap; }`
       );
-      declarations.push(`font-family: 'BionicRead-Lexend', system-ui, sans-serif !important`);
+      declarations.push(`font-family: 'FocusRead-Lexend', system-ui, sans-serif !important`);
     }
     if (effective.dyslexiaMode) {
       declarations.push(`line-height: ${effective.lineHeight} !important`);
