@@ -4,6 +4,7 @@
     minWordLength: 4,
     fontSizeThreshold: 14,
     fontSizeMax: 24,
+    intensity: 0.5,
     processIframes: true,
     smartMode: true,
     siteSettings: {}
@@ -38,6 +39,7 @@
       minWordLength: site.minWordLength ?? settings.minWordLength,
       fontSizeThreshold: site.fontSizeThreshold ?? settings.fontSizeThreshold,
       fontSizeMax: site.fontSizeMax ?? settings.fontSizeMax,
+      intensity: site.intensity ?? settings.intensity,
       smartMode: site.smartMode ?? settings.smartMode
     };
   }
@@ -88,7 +90,8 @@
       const m = part.match(/^([^\p{L}\p{N}]*)([\p{L}\p{N}]+)([^\p{L}\p{N}]*)$/u);
       if (m && m[2].length >= min) {
         const [, pre, word, post] = m;
-        const boldLen = Math.ceil(word.length / 2);
+        const raw = Math.ceil(word.length * effective.intensity);
+        const boldLen = Math.max(1, Math.min(word.length - 1, raw));
         html += escapeHtml(pre)
           + '<b>' + escapeHtml(word.slice(0, boldLen)) + '</b>'
           + escapeHtml(word.slice(boldLen))

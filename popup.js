@@ -3,6 +3,7 @@ const DEFAULTS = {
   minWordLength: 4,
   fontSizeThreshold: 14,
   fontSizeMax: 24,
+  intensity: 0.5,
   processIframes: true,
   smartMode: true,
   siteSettings: {}
@@ -109,6 +110,11 @@ function render() {
   $('fontSizeMaxVal').textContent = mfm;
   $('fontSizeMax').disabled = !hostname;
 
+  const intensity = effectiveValue('intensity');
+  $('intensity').value = Math.round(intensity * 100);
+  $('intensityVal').textContent = Math.round(intensity * 100);
+  $('intensity').disabled = !hostname;
+
   updateOverrideIndicator();
 }
 
@@ -144,6 +150,12 @@ async function init() {
     const v = parseInt(e.target.value, 10);
     $('fontSizeMaxVal').textContent = v;
     writeSiteOverride('fontSizeMax', v);
+  });
+
+  $('intensity').addEventListener('input', (e) => {
+    const pct = parseInt(e.target.value, 10);
+    $('intensityVal').textContent = pct;
+    writeSiteOverride('intensity', pct / 100);
   });
 
   $('reset').addEventListener('click', resetSite);

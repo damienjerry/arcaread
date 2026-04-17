@@ -3,6 +3,7 @@ const DEFAULTS = {
   minWordLength: 4,
   fontSizeThreshold: 14,
   fontSizeMax: 24,
+  intensity: 0.5,
   processIframes: true,
   smartMode: true,
   siteSettings: {}
