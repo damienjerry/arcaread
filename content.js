@@ -3,9 +3,10 @@
     enabled: true,
     minWordLength: 4,
     fontSizeThreshold: 14,
+    fontSizeMax: 24,
     processIframes: true,
     smartMode: true,
-    siteOverrides: {}
+    siteSettings: {}
   };
 
   const inTopFrame = window.top === window.self;
@@ -22,14 +23,29 @@
   const ORIGINAL_ATTR = 'data-bionic-original';
 
   let settings = { ...DEFAULTS };
+  let effective = { ...DEFAULTS };
   let observer = null;
   let active = false;
 
-  function isEnabledForSite() {
-    if (!settings.enabled) return false;
-    if (!inTopFrame && !settings.processIframes) return false;
-    const override = settings.siteOverrides?.[location.hostname];
-    return override !== false;
+  // Merge global defaults with per-site overrides for the current hostname.
+  // Any field in siteSettings[host] wins over the global value for that host.
+  function computeEffective() {
+    const host = location.hostname;
+    const site = (settings.siteSettings && settings.siteSettings[host]) || {};
+    return {
+      enabled: settings.enabled && site.enabled !== false,
+      processIframes: site.processIframes ?? settings.processIframes,
+      minWordLength: site.minWordLength ?? settings.minWordLength,
+      fontSizeThreshold: site.fontSizeThreshold ?? settings.fontSizeThreshold,
+      fontSizeMax: site.fontSizeMax ?? settings.fontSizeMax,
+      smartMode: site.smartMode ?? settings.smartMode
+    };
+  }
+
+  function isEnabledHere() {
+    if (!effective.enabled) return false;
+    if (!inTopFrame && !effective.processIframes) return false;
+    return true;
   }
 
   function escapeHtml(s) {
@@ -45,7 +61,9 @@
     if (el.closest(SKIP_ROLES_SELECTOR)) return false;
     if (el.closest('nav, aside, footer')) return false;
     const fontSize = parseFloat(getComputedStyle(el).fontSize);
-    if (!isFinite(fontSize) || fontSize < settings.fontSizeThreshold) return false;
+    if (!isFinite(fontSize)) return false;
+    if (fontSize < effective.fontSizeThreshold) return false;
+    if (fontSize > effective.fontSizeMax) return false;
     return true;
   }
 
@@ -59,7 +77,7 @@
     const parts = text.split(/(\s+)/);
     let html = '';
     let modified = false;
-    const min = settings.minWordLength;
+    const min = effective.minWordLength;
 
     for (const part of parts) {
       if (!part) continue;
@@ -146,13 +164,11 @@
     const MIN_WORDS = 150;
     const MAX_LINK_DENSITY = 0.4;
 
-    // 1. <main> if it has substantial text
     const main = document.querySelector('main, [role="main"]');
     if (main && wordCount(main) >= MIN_WORDS && linkDensity(main) < MAX_LINK_DENSITY) {
       return main;
     }
 
-    // 2. A single <article> (not a feed)
     const articles = document.querySelectorAll('article, [role="article"]');
     if (articles.length === 1) {
       const art = articles[0];
@@ -161,7 +177,6 @@
       }
     }
 
-    // 3. Common CMS/blog class names
     const classSelectors = [
       '.post-content', '.entry-content', '.article-content', '.article-body',
       '.post-body', '#article-body', '.story-body', '.markdown-body'
@@ -173,8 +188,6 @@
       }
     }
 
-    // 4. Density scoring fallback — pick the div/section with the highest
-    //    text-to-link-and-chrome score.
     let best = null;
     let bestScore = 0;
     const candidates = document.querySelectorAll('div, section');
@@ -185,7 +198,6 @@
       if (words < 250) continue;
       const density = linkDensity(el);
       if (density > 0.3) continue;
-      // Prefer narrower containers: smaller DOM size for the same text = better.
       const domSize = el.getElementsByTagName('*').length || 1;
       const score = words / domSize + paragraphs.length * 2 - density * 10;
       if (score > bestScore) {
@@ -212,9 +224,7 @@
     if (active || !document.body) return;
     active = true;
 
-    // Smart mode: try to narrow to the article body. If nothing scores
-    // (app-like pages, short pages, Gmail) we fall back to the full body.
-    const detected = settings.smartMode ? findArticleRoot() : null;
+    const detected = effective.smartMode ? findArticleRoot() : null;
     const root = detected || document.body;
 
     processSubtree(root);
@@ -249,7 +259,8 @@
   }
 
   function apply() {
-    if (isEnabledForSite()) {
+    effective = computeEffective();
+    if (isEnabledHere()) {
       if (active) {
         deactivate();
         activate();
@@ -261,7 +272,21 @@
     }
   }
 
-  chrome.storage.sync.get(DEFAULTS, (data) => {
+  // One-time migration: move legacy siteOverrides { host: bool } into
+  // siteSettings[host].enabled and drop siteOverrides.
+  function migrateLegacyIfNeeded(data) {
+    if (!data.siteOverrides) return data;
+    const siteSettings = { ...(data.siteSettings || {}) };
+    for (const [host, enabled] of Object.entries(data.siteOverrides)) {
+      siteSettings[host] = { ...(siteSettings[host] || {}), enabled };
+    }
+    chrome.storage.sync.set({ siteSettings });
+    chrome.storage.sync.remove('siteOverrides');
+    return { ...data, siteSettings, siteOverrides: undefined };
+  }
+
+  chrome.storage.sync.get(null, (raw) => {
+    const data = migrateLegacyIfNeeded(raw);
     settings = { ...DEFAULTS, ...data };
     if (document.body) {
       apply();
