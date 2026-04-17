@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FocusRead</title>
+<style>
+  :root {
+    --bg: #111;
+    --fg: #eee;
+    --bold: #fff;
+    --muted: #888;
+    --border: #333;
+    --link: #9ec5ff;
+  }
+  html.tint-sepia    { --bg: #f5ecd7; --fg: #3d2f1e; --bold: #1a1208; --muted: #8a7357; --border: #d9c9aa; --link: #8c5a1e; }
+  html.tint-paper    { --bg: #ffffff; --fg: #1a1a1a; --bold: #000; --muted: #666; --border: #ddd; --link: #1558d6; }
+  html.tint-solarized{ --bg: #fdf6e3; --fg: #586e75; --bold: #073642; --muted: #93a1a1; --border: #eee8d5; --link: #268bd2; }
+  html.tint-dim      { --bg: #0a0a0a; --fg: #b8b8b8; --bold: #e8e8e8; --muted: #666; --border: #222; --link: #6ea0e0; }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+  .bar {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    z-index: 10;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+  }
+  .bar h1 { font-size: 13px; margin: 0; font-weight: 600; letter-spacing: 0.5px; color: var(--bold); font-family: inherit; }
+  .bar h1 b { font-weight: 800; }
+  .bar .src {
+    font-size: 11px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .bar button, .bar select {
+    background: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+  }
+  .bar button:hover { background: rgba(255,255,255,0.05); }
+  .bar select { padding: 4px 6px; }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 24px 100px;
+  }
+  h1.title { font-size: 32px; line-height: 1.25; margin: 0 0 8px; color: var(--bold); font-weight: 700; }
+  .meta { font-size: 13px; color: var(--muted); margin-bottom: 32px; font-family: -apple-system, sans-serif; }
+  article p, article li, article blockquote { margin-bottom: 1em; }
+  article img { max-width: 100%; height: auto; display: block; margin: 1.5em auto; border-radius: 4px; }
+  article a { color: var(--link); }
+  article blockquote { border-left: 3px solid var(--border); padding-left: 16px; color: var(--muted); font-style: italic; }
+  article h1, article h2, article h3, article h4 { color: var(--bold); font-weight: 700; line-height: 1.3; margin: 1.5em 0 0.5em; }
+  article h1 { font-size: 24px; }
+  article h2 { font-size: 22px; }
+  article h3 { font-size: 19px; }
+  article pre, article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; background: rgba(128,128,128,0.1); padding: 2px 4px; border-radius: 3px; }
+  article pre { padding: 12px; overflow-x: auto; }
+  article b, article strong { color: var(--bold); font-weight: 700; }
+  article .speaking { background: rgba(125, 207, 166, 0.18); border-radius: 3px; }
+  .status { text-align: center; color: var(--muted); padding: 40px 16px; font-size: 13px; }
+  .err { color: #ff7b7b; padding: 16px; background: rgba(255,100,100,0.08); border: 1px solid rgba(255,100,100,0.3); border-radius: 4px; margin: 16px 24px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <h1><b>Foc</b>us<b>Re</b>ad</h1>
+  <span class="src" id="src">—</span>
+  <button id="play" title="Read aloud">▶</button>
+  <select id="tint" title="Tint">
+    <option value="off">Night</option>
+    <option value="dim">Dim</option>
+    <option value="sepia">Sepia</option>
+    <option value="solarized">Solarized</option>
+    <option value="paper">Paper</option>
+  </select>
+  <button id="exit" title="Back to original">Exit</button>
+</div>
+<main>
+  <div class="status" id="status">Loading…</div>
+  <h1 class="title" id="title"></h1>
+  <div class="meta" id="meta"></div>
+  <article id="article"></article>
+</main>
+<script src="core.js"></script>
+<script src="reader.js"></script>
+</body>
+</html>

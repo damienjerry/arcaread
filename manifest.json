@@ -45,7 +45,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/*", "vendor/*", "viewer.html", "viewer.js", "core.js"],
+      "resources": ["fonts/*", "vendor/*", "viewer.html", "viewer.js", "reader.html", "reader.js", "core.js"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -176,6 +176,21 @@
   .stat { background: #181818; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
   .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
   .stat-val { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .action {
+    background: #1a1a1a;
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .action:hover:not(:disabled) { background: #222; border-color: #555; }
+  .action:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -183,6 +198,8 @@
   <h1><b>Foc</b>us<b>Re</b>ad</h1>
 
   <div class="preview" id="preview"></div>
+
+  <button class="action" id="openReader" type="button" disabled>Open this page in Reader</button>
 
   <div class="row">
     <div class="col">

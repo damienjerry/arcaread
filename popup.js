@@ -276,6 +276,32 @@ async function init() {
   });
 
   $('reset').addEventListener('click', resetSite);
+
+  $('openReader').disabled = !hostname;
+  $('openReader').addEventListener('click', openInReader);
+}
+
+async function openInReader() {
+  const btn = $('openReader');
+  btn.disabled = true;
+  btn.textContent = 'Extracting…';
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) throw new Error('No active tab');
+    const resp = await chrome.tabs.sendMessage(tab.id, { type: 'extract-article' });
+    if (!resp?.ok || !resp.article) throw new Error('Could not extract article');
+    const id = String(Date.now());
+    await chrome.storage.session.set({ ['article:' + id]: resp.article });
+    const url = chrome.runtime.getURL('reader.html') + '?id=' + encodeURIComponent(id);
+    await chrome.tabs.create({ url });
+    window.close();
+  } catch (e) {
+    btn.textContent = 'Failed — try again';
+    setTimeout(() => {
+      btn.textContent = 'Open this page in Reader';
+      btn.disabled = !hostname;
+    }, 1500);
+  }
 }
 
 init();

@@ -409,6 +409,60 @@
     if (tickHandle !== null) { clearInterval(tickHandle); tickHandle = null; }
   }
 
+  // Extract the current page's article as sanitized HTML for the
+  // Reader View. Only the top frame responds; iframes stay silent so
+  // we don't race the popup's sendMessage.
+  const UNSAFE_TAGS = ['script', 'iframe', 'object', 'embed', 'noscript', 'style', 'link', 'meta'];
+  function extractArticle() {
+    const root = findArticleRoot() || document.body;
+    if (!root) return null;
+    const clone = root.cloneNode(true);
+    for (const tag of UNSAFE_TAGS) {
+      clone.querySelectorAll(tag).forEach(el => el.remove());
+    }
+    // Strip inline event handlers and javascript: hrefs.
+    clone.querySelectorAll('*').forEach(el => {
+      for (const attr of Array.from(el.attributes)) {
+        if (attr.name.toLowerCase().startsWith('on')) el.removeAttribute(attr.name);
+        if ((attr.name === 'href' || attr.name === 'src') && /^javascript:/i.test(attr.value)) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    });
+    // Drop nav / complementary / hidden stuff that slipped inside.
+    clone.querySelectorAll('nav, aside, footer, [role="navigation"], [role="complementary"], [role="banner"], [aria-hidden="true"], [hidden]').forEach(el => el.remove());
+    // Absolutize image srcs so they still resolve from the reader origin.
+    clone.querySelectorAll('img[src]').forEach(img => {
+      try { img.src = new URL(img.getAttribute('src'), location.href).href; } catch {}
+      img.removeAttribute('srcset');
+    });
+    clone.querySelectorAll('a[href]').forEach(a => {
+      try { a.href = new URL(a.getAttribute('href'), location.href).href; } catch {}
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+    });
+    const title = document.title || document.querySelector('h1')?.textContent?.trim() || location.hostname;
+    return {
+      title,
+      url: location.href,
+      host: location.hostname,
+      html: clone.innerHTML,
+      detected: !!root && root !== document.body
+    };
+  }
+
+  chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+    if (msg?.type === 'extract-article' && inTopFrame) {
+      try {
+        const article = extractArticle();
+        sendResponse({ ok: !!article, article });
+      } catch (e) {
+        sendResponse({ ok: false, error: String(e) });
+      }
+      return true;
+    }
+  });
+
   chrome.storage.sync.get(null, (raw) => {
     const data = migrateLegacyIfNeeded(raw);
     settings = { ...DEFAULTS, ...data };
