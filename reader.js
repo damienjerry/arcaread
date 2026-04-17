@@ -138,10 +138,133 @@ tintSel.addEventListener('change', (e) => applyTint(e.target.value));
 
 exitBtn.addEventListener('click', () => {
   window.speechSynthesis.cancel();
+  stopChunks();
   // Try to jump back to the original URL, else close.
   const url = articleEl.dataset.origin;
   if (url) location.href = url;
   else window.close();
+});
+
+// ---------- Chunk mode (RSVP with bionic) ----------
+
+const chunkView = document.getElementById('chunkView');
+const chunkDisplay = document.getElementById('chunkDisplay');
+const chunkPosEl = document.getElementById('chunkPos');
+const chunkTotalEl = document.getElementById('chunkTotal');
+const chunkPlayBtn = document.getElementById('chunkPlay');
+const chunkBackBtn = document.getElementById('chunkBack');
+const chunkNextBtn = document.getElementById('chunkNext');
+const chunkCloseBtn = document.getElementById('chunkClose');
+const chunkSizeSel = document.getElementById('chunkSize');
+const chunkWpmInput = document.getElementById('chunkWpm');
+const chunkWpmVal = document.getElementById('chunkWpmVal');
+const chunksBtn = document.getElementById('chunks');
+
+let chunkWords = [];
+let chunkIdx = 0;
+let chunkTimer = null;
+let chunkSettings = { minWordLength: 4, intensity: 0.5 };
+
+function chunkSize() { return parseInt(chunkSizeSel.value, 10) || 2; }
+function chunkWpm() { return parseInt(chunkWpmInput.value, 10) || 300; }
+function chunkIntervalMs() {
+  // WPM refers to individual words regardless of chunk grouping, so a
+  // chunk of N words dwells for N * (60 / WPM) * 1000 ms.
+  return Math.max(80, chunkSize() * (60 / chunkWpm()) * 1000);
+}
+function chunkTotal() {
+  const size = chunkSize();
+  return Math.max(1, Math.ceil(chunkWords.length / size));
+}
+
+function buildChunkWords() {
+  const text = (articleEl.textContent || '').replace(/\s+/g, ' ').trim();
+  chunkWords = text.split(' ').filter(Boolean);
+}
+
+function renderChunk() {
+  const size = chunkSize();
+  const slice = chunkWords.slice(chunkIdx * size, chunkIdx * size + size);
+  if (!slice.length) {
+    pauseChunks();
+    return;
+  }
+  const joined = slice.join(' ');
+  const { segments } = FocusCore.transform(joined, chunkSettings);
+  chunkDisplay.innerHTML = FocusCore.toHtml(segments);
+  chunkPosEl.textContent = String(chunkIdx + 1);
+  chunkTotalEl.textContent = String(chunkTotal());
+}
+
+function stepChunk() {
+  chunkIdx++;
+  if (chunkIdx >= chunkTotal()) {
+    chunkIdx = chunkTotal() - 1;
+    pauseChunks();
+    return;
+  }
+  renderChunk();
+}
+
+function playChunks() {
+  if (!chunkWords.length) buildChunkWords();
+  if (!chunkWords.length) return;
+  if (chunkTimer) clearInterval(chunkTimer);
+  chunkTimer = setInterval(stepChunk, chunkIntervalMs());
+  chunkPlayBtn.textContent = '❚❚';
+}
+
+function pauseChunks() {
+  if (chunkTimer) { clearInterval(chunkTimer); chunkTimer = null; }
+  chunkPlayBtn.textContent = '▶';
+}
+
+function stopChunks() {
+  pauseChunks();
+  chunkView.hidden = true;
+}
+
+function openChunks() {
+  buildChunkWords();
+  if (!chunkWords.length) { setStatus('Nothing to chunk.', true); return; }
+  chunkIdx = 0;
+  chunkView.hidden = false;
+  renderChunk();
+}
+
+chunksBtn.addEventListener('click', openChunks);
+chunkCloseBtn.addEventListener('click', stopChunks);
+chunkPlayBtn.addEventListener('click', () => {
+  chunkTimer ? pauseChunks() : playChunks();
+});
+chunkBackBtn.addEventListener('click', () => {
+  pauseChunks();
+  chunkIdx = Math.max(0, chunkIdx - 1);
+  renderChunk();
+});
+chunkNextBtn.addEventListener('click', () => {
+  pauseChunks();
+  chunkIdx = Math.min(chunkTotal() - 1, chunkIdx + 1);
+  renderChunk();
+});
+chunkSizeSel.addEventListener('change', () => {
+  // Preserve approximate reading position across chunk-size changes.
+  const wordPos = chunkIdx * (chunkSize());
+  chunkIdx = Math.floor(wordPos / chunkSize());
+  renderChunk();
+  if (chunkTimer) playChunks();
+});
+chunkWpmInput.addEventListener('input', (e) => {
+  chunkWpmVal.textContent = e.target.value;
+  if (chunkTimer) playChunks();
+});
+// Spacebar toggles play/pause while in chunk mode.
+document.addEventListener('keydown', (e) => {
+  if (chunkView.hidden) return;
+  if (e.code === 'Space') { e.preventDefault(); chunkTimer ? pauseChunks() : playChunks(); }
+  else if (e.code === 'ArrowLeft') { pauseChunks(); chunkBackBtn.click(); }
+  else if (e.code === 'ArrowRight') { pauseChunks(); chunkNextBtn.click(); }
+  else if (e.code === 'Escape') stopChunks();
 });
 
 // ---------- Load + render ----------
@@ -190,6 +313,7 @@ async function render() {
   metaEl.innerHTML = `<a href="${payload.url}" style="color: inherit">${payload.host}</a> · ${mins} min read${payload.detected ? '' : ' · (no article detected — showing page content)'}`;
 
   const settings = await loadSettings(payload.host);
+  chunkSettings = settings;
   bionicifyText(articleEl, settings);
   collectParagraphs();
   setStatus('');
