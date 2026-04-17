@@ -50,10 +50,6 @@
     return true;
   }
 
-  function escapeHtml(s) {
-    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
   function shouldProcessParent(el) {
     if (!el) return false;
     if (SKIP_TAGS.has(el.tagName)) return false;
@@ -76,38 +72,16 @@
     const text = node.nodeValue;
     if (!text || !text.trim()) return;
 
-    const parts = text.split(/(\s+)/);
-    let html = '';
-    let modified = false;
-    const min = effective.minWordLength;
-
-    for (const part of parts) {
-      if (!part) continue;
-      if (/^\s+$/.test(part)) {
-        html += escapeHtml(part);
-        continue;
-      }
-      const m = part.match(/^([^\p{L}\p{N}]*)([\p{L}\p{N}]+)([^\p{L}\p{N}]*)$/u);
-      if (m && m[2].length >= min) {
-        const [, pre, word, post] = m;
-        const raw = Math.ceil(word.length * effective.intensity);
-        const boldLen = Math.max(1, Math.min(word.length - 1, raw));
-        html += escapeHtml(pre)
-          + '<b>' + escapeHtml(word.slice(0, boldLen)) + '</b>'
-          + escapeHtml(word.slice(boldLen))
-          + escapeHtml(post);
-        modified = true;
-      } else {
-        html += escapeHtml(part);
-      }
-    }
-
+    const { segments, modified } = BionicCore.transform(text, {
+      minWordLength: effective.minWordLength,
+      intensity: effective.intensity
+    });
     if (!modified) return;
 
     const wrapper = document.createElement('span');
     wrapper.className = PROCESSED_CLASS;
     wrapper.setAttribute(ORIGINAL_ATTR, text);
-    wrapper.innerHTML = html;
+    wrapper.innerHTML = BionicCore.toHtml(segments);
     parent.replaceChild(wrapper, node);
   }
 

@@ -21,12 +21,21 @@ A minimal WebExtension (Manifest V3) that bolds the first half of each word on a
 ## Project layout
 
 ```
+core.js        # portable transformation — no DOM, no browser APIs
 manifest.json   # MV3 manifest
 background.js   # service worker — seeds default settings
-content.js     # DOM walker + MutationObserver
+content.js     # DOM walker + MutationObserver (consumes core.js)
 popup.html     # controls UI (dark, minimal)
 popup.js       # popup logic → writes to chrome.storage.sync
 ```
+
+`core.js` is deliberately dependency-free and UMD-exported so future
+shells (CLI, Android accessibility service, iOS reader app, Electron
+desktop reader) can import the same transformation. It exposes
+`BionicCore.transform(text, { minWordLength, intensity })` returning
+structured `{ text, bold }` segments; the web shell renders those as
+`<b>` tags, but any platform can render them however it likes
+(NSAttributedString, SpannableString, ANSI bold, etc.).
 
 ## How it works
 
