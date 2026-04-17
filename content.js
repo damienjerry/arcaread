@@ -126,21 +126,39 @@
     if (SKIP_TAGS.has(root.tagName)) return out;
     if (root.hasAttribute?.(ORIGINAL_ATTR)) return out;
 
+    walkTreeCollecting(root, out);
+    return out;
+  }
+
+  // Walks a DOM subtree collecting text nodes into `out`. Recurses into
+  // each element's open shadowRoot, so Web Components (new Reddit, many
+  // Google tools, Lit-based apps) get their text processed too. Closed
+  // shadow roots are inaccessible by design — those stay unprocessed.
+  function walkTreeCollecting(root, out) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(n) {
-        const p = n.parentElement;
+        const p = n.parentElement || n.parentNode?.host;
         if (!p) return NodeFilter.FILTER_REJECT;
         if (SKIP_TAGS.has(p.tagName)) return NodeFilter.FILTER_REJECT;
-        if (p.closest(`[${ORIGINAL_ATTR}]`)) return NodeFilter.FILTER_REJECT;
-        if (p.closest(SKIP_ROLES_SELECTOR)) return NodeFilter.FILTER_REJECT;
-        if (p.closest('nav, aside, footer')) return NodeFilter.FILTER_REJECT;
+        if (p.closest?.(`[${ORIGINAL_ATTR}]`)) return NodeFilter.FILTER_REJECT;
+        if (p.closest?.(SKIP_ROLES_SELECTOR)) return NodeFilter.FILTER_REJECT;
+        if (p.closest?.('nav, aside, footer')) return NodeFilter.FILTER_REJECT;
         if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
     });
     let n;
     while ((n = walker.nextNode())) out.push(n);
-    return out;
+
+    // Descend into open shadow roots of every element under this root.
+    const elementWalker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+    let el = elementWalker.nextNode();
+    while (el) {
+      // element.shadowRoot only returns open roots; closed ones are
+      // inaccessible to scripts by design.
+      if (el.shadowRoot) walkTreeCollecting(el.shadowRoot, out);
+      el = elementWalker.nextNode();
+    }
   }
 
   function processSubtree(root) {
