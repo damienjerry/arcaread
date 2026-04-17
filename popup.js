@@ -179,11 +179,20 @@ function formatMinutes(seconds) {
 }
 
 async function renderAnalytics() {
-  const { analytics = { total: 0, days: {} } } =
-    await chrome.storage.local.get({ analytics: { total: 0, days: {} } });
+  const { analytics = { total: 0, totalWords: 0, days: {} } } =
+    await chrome.storage.local.get({ analytics: { total: 0, totalWords: 0, days: {} } });
   const today = analytics.days[todayKey()] || 0;
   $('statToday').textContent = formatMinutes(today);
   $('statTotal').textContent = formatMinutes(analytics.total || 0);
+  // WPM = words processed per minute of active reading. Displayed only
+  // once we have enough signal (>60s) to avoid early nonsense.
+  const seconds = analytics.total || 0;
+  const words = analytics.totalWords || 0;
+  if (seconds > 60 && words > 0) {
+    $('statWpm').textContent = String(Math.round(words / (seconds / 60)));
+  } else {
+    $('statWpm').textContent = '—';
+  }
 }
 
 function todayKey() {

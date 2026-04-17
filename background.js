@@ -82,10 +82,11 @@ function todayKey() {
   return `${y}-${m}-${day}`;
 }
 
-async function recordTick(seconds, host) {
-  const { analytics = { total: 0, days: {}, hosts: {} } } =
-    await chrome.storage.local.get({ analytics: { total: 0, days: {}, hosts: {} } });
+async function recordTick(seconds, words, host) {
+  const { analytics = { total: 0, totalWords: 0, days: {}, hosts: {} } } =
+    await chrome.storage.local.get({ analytics: { total: 0, totalWords: 0, days: {}, hosts: {} } });
   analytics.total = (analytics.total || 0) + seconds;
+  analytics.totalWords = (analytics.totalWords || 0) + (words || 0);
   const k = todayKey();
   analytics.days[k] = (analytics.days[k] || 0) + seconds;
   if (host) {
@@ -101,12 +102,12 @@ async function recordTick(seconds, host) {
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.type === 'focusread-tick' && typeof msg.seconds === 'number') {
-    recordTick(msg.seconds, msg.host);
+    recordTick(msg.seconds, msg.words || 0, msg.host);
     sendResponse({ ok: true });
     return true;
   }
   if (msg?.type === 'focusread-reset-analytics') {
-    chrome.storage.local.set({ analytics: { total: 0, days: {}, hosts: {} } })
+    chrome.storage.local.set({ analytics: { total: 0, totalWords: 0, days: {}, hosts: {} } })
       .then(() => sendResponse({ ok: true }));
     return true;
   }

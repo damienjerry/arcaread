@@ -113,6 +113,10 @@
     wrapper.setAttribute(ORIGINAL_ATTR, text);
     wrapper.innerHTML = FocusCore.toHtml(segments);
     parent.replaceChild(wrapper, node);
+
+    // Each bolded segment corresponds to one word that received the
+    // bionic treatment. Used by the WPM estimate.
+    for (const s of segments) if (s.bold) pendingWords++;
   }
 
   function collectTextNodes(root) {
@@ -390,6 +394,7 @@
   // Background aggregates into chrome.storage.local.
   const TICK_SECONDS = 15;
   let tickHandle = null;
+  let pendingWords = 0;
   function startTicking() {
     stopTicking();
     if (!inTopFrame) return;
@@ -400,9 +405,11 @@
         chrome.runtime.sendMessage({
           type: 'focusread-tick',
           seconds: TICK_SECONDS,
+          words: pendingWords,
           host: location.hostname
         });
       } catch {}
+      pendingWords = 0;
     }, TICK_SECONDS * 1000);
   }
   function stopTicking() {
