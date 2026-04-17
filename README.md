@@ -51,7 +51,25 @@ A `MutationObserver` on `document.body` (`childList`, `subtree`, `characterData`
 
 ## Safari
 
-Not yet packaged. The plan is to run through `xcrun safari-web-extension-converter` once the Chrome build settles.
+The extension is a standard Manifest V3 WebExtension and packages directly through Apple's converter. One-time Xcode setup if you haven't already:
+
+```sh
+sudo xcodebuild -runFirstLaunch
+```
+
+Then from the repo root:
+
+```sh
+xcrun safari-web-extension-converter ./bionicread \
+  --project-location ./bionicread/safari \
+  --app-name "BionicRead" \
+  --bundle-identifier "com.damienjerry.bionicread" \
+  --copy-resources --no-open --force
+```
+
+That produces `safari/BionicRead/BionicRead.xcodeproj`. Open it in Xcode, sign with your Apple ID team, build, and run. In Safari, enable **Develop → Allow unsigned extensions** (Technology Preview) or use your signed build, then flip the extension on under Settings → Extensions.
+
+When you bump the extension, rerun the converter with `--force` and it'll regenerate the wrapper in place.
 
 ## Roadmap
 
