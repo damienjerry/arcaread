@@ -11,6 +11,8 @@ const DEFAULTS = {
   letterSpacing: 0.05,
   wordSpacing: 0.1,
   readingFont: 'off',
+  skipAppLike: false,
+  focusMode: false,
   openPdfsInViewer: false,
   siteSettings: {}
 };
@@ -67,6 +69,48 @@ function isPdfLikelyUrl(url) {
     return false;
   }
 }
+
+// Reading-time analytics. Content scripts send { type: 'focusread-tick',
+// seconds, host }. We aggregate per-day totals and per-host totals in
+// chrome.storage.local (not synced — it'd bloat the sync quota and the
+// data isn't useful across devices). Data never leaves the machine.
+function todayKey() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+async function recordTick(seconds, host) {
+  const { analytics = { total: 0, days: {}, hosts: {} } } =
+    await chrome.storage.local.get({ analytics: { total: 0, days: {}, hosts: {} } });
+  analytics.total = (analytics.total || 0) + seconds;
+  const k = todayKey();
+  analytics.days[k] = (analytics.days[k] || 0) + seconds;
+  if (host) {
+    analytics.hosts[host] = (analytics.hosts[host] || 0) + seconds;
+  }
+  // Keep at most ~60 days to cap storage growth.
+  const dayKeys = Object.keys(analytics.days).sort();
+  if (dayKeys.length > 60) {
+    for (const old of dayKeys.slice(0, dayKeys.length - 60)) delete analytics.days[old];
+  }
+  await chrome.storage.local.set({ analytics });
+}
+
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg?.type === 'focusread-tick' && typeof msg.seconds === 'number') {
+    recordTick(msg.seconds, msg.host);
+    sendResponse({ ok: true });
+    return true;
+  }
+  if (msg?.type === 'focusread-reset-analytics') {
+    chrome.storage.local.set({ analytics: { total: 0, days: {}, hosts: {} } })
+      .then(() => sendResponse({ ok: true }));
+    return true;
+  }
+});
 
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   if (details.frameId !== 0) return; // top frame only

@@ -172,6 +172,10 @@
     cursor: pointer;
   }
   .select:disabled { opacity: 0.4; cursor: not-allowed; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat { background: #181818; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+  .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .stat-val { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -238,6 +242,28 @@
     </div>
     <label class="switch">
       <input type="checkbox" id="smartMode">
+      <span class="slider-track"></span>
+    </label>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label for="skipAppLike">Skip app-like pages</label>
+      <span class="hint">Do nothing when no article is detected</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="skipAppLike">
+      <span class="slider-track"></span>
+    </label>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label for="focusMode">Focus mode</label>
+      <span class="hint">Dim paragraphs; hover to reveal</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="focusMode">
       <span class="slider-track"></span>
     </label>
   </div>
@@ -324,6 +350,17 @@
       <option value="off">Off</option>
       <option value="lexend">Lexend</option>
     </select>
+  </div>
+
+  <hr>
+
+  <div class="section-label">
+    <span>Reading time</span>
+    <button class="reset" id="resetStats" type="button">Reset</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Today</div><div class="stat-val" id="statToday">0s</div></div>
+    <div class="stat"><div class="stat-label">All time</div><div class="stat-val" id="statTotal">0s</div></div>
   </div>
 </div>
 <script src="core.js"></script>

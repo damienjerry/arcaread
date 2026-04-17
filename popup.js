@@ -11,6 +11,8 @@ const DEFAULTS = {
   letterSpacing: 0.05,
   wordSpacing: 0.1,
   readingFont: 'off',
+  skipAppLike: false,
+  focusMode: false,
   openPdfsInViewer: false,
   siteSettings: {}
 };
@@ -156,8 +158,37 @@ function render() {
   $('readingFont').value = font;
   $('readingFont').disabled = !hostname;
 
+  $('skipAppLike').checked = effectiveValue('skipAppLike') === true;
+  $('skipAppLike').disabled = !hostname;
+
+  $('focusMode').checked = effectiveValue('focusMode') === true;
+  $('focusMode').disabled = !hostname;
+
   renderPreview();
   updateOverrideIndicator();
+  renderAnalytics();
+}
+
+function formatMinutes(seconds) {
+  if (!seconds || seconds < 60) return `${Math.round(seconds || 0)}s`;
+  const m = Math.round(seconds / 60);
+  if (m < 60) return `${m}m`;
+  const h = Math.floor(m / 60);
+  const rm = m % 60;
+  return rm === 0 ? `${h}h` : `${h}h ${rm}m`;
+}
+
+async function renderAnalytics() {
+  const { analytics = { total: 0, days: {} } } =
+    await chrome.storage.local.get({ analytics: { total: 0, days: {} } });
+  const today = analytics.days[todayKey()] || 0;
+  $('statToday').textContent = formatMinutes(today);
+  $('statTotal').textContent = formatMinutes(analytics.total || 0);
+}
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 async function init() {
@@ -228,6 +259,20 @@ async function init() {
 
   $('readingFont').addEventListener('change', (e) => {
     writeSiteOverride('readingFont', e.target.value);
+  });
+
+  $('skipAppLike').addEventListener('change', (e) => {
+    writeSiteOverride('skipAppLike', e.target.checked);
+  });
+
+  $('focusMode').addEventListener('change', (e) => {
+    writeSiteOverride('focusMode', e.target.checked);
+  });
+
+  $('resetStats').addEventListener('click', async () => {
+    if (!confirm('Reset reading time?')) return;
+    await chrome.runtime.sendMessage({ type: 'focusread-reset-analytics' });
+    renderAnalytics();
   });
 
   $('reset').addEventListener('click', resetSite);

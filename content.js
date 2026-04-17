@@ -12,6 +12,8 @@
     letterSpacing: 0.05,
     wordSpacing: 0.1,
     readingFont: 'off',
+    skipAppLike: false,
+    focusMode: false,
     siteSettings: {}
   };
 
@@ -50,7 +52,9 @@
       lineHeight: site.lineHeight ?? settings.lineHeight,
       letterSpacing: site.letterSpacing ?? settings.letterSpacing,
       wordSpacing: site.wordSpacing ?? settings.wordSpacing,
-      readingFont: site.readingFont ?? settings.readingFont
+      readingFont: site.readingFont ?? settings.readingFont,
+      skipAppLike: site.skipAppLike ?? settings.skipAppLike,
+      focusMode: site.focusMode ?? settings.focusMode
     };
   }
 
@@ -214,10 +218,10 @@
 
   const DYSLEXIA_STYLE_ID = 'focusread-style';
 
-  // Combined style injector for dyslexia spacing + reading font. Uses
-  // a low-specificity rule on <html> so values inherit through prose
-  // but component-level CSS (buttons, code blocks) still wins and
-  // site UIs don't break.
+  // Combined style injector for dyslexia spacing + reading font +
+  // focus mode. Uses a low-specificity rule on <html> so values
+  // inherit through prose but component-level CSS (buttons, code
+  // blocks) still wins and site UIs don't break.
   function applyReadingStyles() {
     const existing = document.getElementById(DYSLEXIA_STYLE_ID);
     const rules = [];
@@ -236,14 +240,27 @@
       declarations.push(`word-spacing: ${effective.wordSpacing}em !important`);
     }
 
-    if (rules.length === 0 && declarations.length === 0) {
+    if (declarations.length > 0) {
+      rules.push(`html { ${declarations.join('; ')}; }`);
+    }
+
+    // Focus mode: dim every paragraph/list-item and restore the one
+    // the cursor is over. Hover transitions give a gentle reveal.
+    if (effective.focusMode) {
+      rules.push(
+        `html.focusread-focus p, html.focusread-focus li, html.focusread-focus blockquote, html.focusread-focus dd { transition: opacity 0.25s ease; opacity: 0.35; }`,
+        `html.focusread-focus p:hover, html.focusread-focus li:hover, html.focusread-focus blockquote:hover, html.focusread-focus dd:hover { opacity: 1; }`
+      );
+    }
+
+    if (rules.length === 0) {
+      document.documentElement.classList.remove('focusread-focus');
       if (existing) existing.remove();
       return;
     }
 
-    if (declarations.length > 0) {
-      rules.push(`html { ${declarations.join('; ')}; }`);
-    }
+    document.documentElement.classList.toggle('focusread-focus', !!effective.focusMode);
+
     const css = rules.join('\n');
     const el = existing || document.createElement('style');
     el.id = DYSLEXIA_STYLE_ID;
@@ -254,6 +271,7 @@
   }
 
   function removeReadingStyles() {
+    document.documentElement?.classList.remove('focusread-focus');
     const el = document.getElementById(DYSLEXIA_STYLE_ID);
     if (el) el.remove();
   }
@@ -271,9 +289,15 @@
 
   function activate() {
     if (active || !document.body) return;
-    active = true;
 
     const detected = effective.smartMode ? findArticleRoot() : null;
+    // Auto-skip on app-like pages: smart mode on, skipAppLike on, no
+    // article detected → do nothing. Users can still force processing
+    // by turning smart mode off for this site.
+    if (effective.smartMode && effective.skipAppLike && !detected) {
+      return;
+    }
+    active = true;
     const root = detected || document.body;
 
     processSubtree(root);
@@ -341,6 +365,32 @@
     return { ...data, siteSettings, siteOverrides: undefined };
   }
 
+  // Reading time telemetry. Ticks every TICK_SECONDS while:
+  //   - this frame is the top frame (don't double-count iframes)
+  //   - the document is visible
+  //   - the extension is active on this page
+  // Background aggregates into chrome.storage.local.
+  const TICK_SECONDS = 15;
+  let tickHandle = null;
+  function startTicking() {
+    stopTicking();
+    if (!inTopFrame) return;
+    tickHandle = setInterval(() => {
+      if (document.visibilityState !== 'visible') return;
+      if (!active) return;
+      try {
+        chrome.runtime.sendMessage({
+          type: 'focusread-tick',
+          seconds: TICK_SECONDS,
+          host: location.hostname
+        });
+      } catch {}
+    }, TICK_SECONDS * 1000);
+  }
+  function stopTicking() {
+    if (tickHandle !== null) { clearInterval(tickHandle); tickHandle = null; }
+  }
+
   chrome.storage.sync.get(null, (raw) => {
     const data = migrateLegacyIfNeeded(raw);
     settings = { ...DEFAULTS, ...data };
@@ -349,6 +399,7 @@
     } else {
       document.addEventListener('DOMContentLoaded', apply, { once: true });
     }
+    startTicking();
   });
 
   chrome.storage.onChanged.addListener((changes, area) => {
