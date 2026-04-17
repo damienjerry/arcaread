@@ -11,6 +11,7 @@
     lineHeight: 1.6,
     letterSpacing: 0.05,
     wordSpacing: 0.1,
+    readingFont: 'off',
     siteSettings: {}
   };
 
@@ -48,7 +49,8 @@
       dyslexiaMode: site.dyslexiaMode ?? settings.dyslexiaMode,
       lineHeight: site.lineHeight ?? settings.lineHeight,
       letterSpacing: site.letterSpacing ?? settings.letterSpacing,
-      wordSpacing: site.wordSpacing ?? settings.wordSpacing
+      wordSpacing: site.wordSpacing ?? settings.wordSpacing,
+      readingFont: site.readingFont ?? settings.readingFont
     };
   }
 
@@ -212,22 +214,37 @@
 
   const DYSLEXIA_STYLE_ID = 'bionic-dyslexia-style';
 
-  // Dyslexia styling is applied by injecting a low-specificity rule on
-  // <html> so the values inherit down through uninterrupted text, but
-  // any component-level line-height / letter-spacing still wins. That
-  // avoids clobbering site UIs while still reshaping reading prose.
-  function applyDyslexiaStyles() {
+  // Combined style injector for dyslexia spacing + reading font. Uses
+  // a low-specificity rule on <html> so values inherit through prose
+  // but component-level CSS (buttons, code blocks) still wins and
+  // site UIs don't break.
+  function applyReadingStyles() {
     const existing = document.getElementById(DYSLEXIA_STYLE_ID);
-    if (!effective.dyslexiaMode) {
+    const rules = [];
+    const declarations = [];
+
+    if (effective.readingFont === 'lexend') {
+      const fontUrl = chrome.runtime.getURL('fonts/Lexend-Variable.ttf');
+      rules.push(
+        `@font-face { font-family: 'BionicRead-Lexend'; src: url("${fontUrl}") format('truetype-variations'); font-weight: 100 900; font-display: swap; }`
+      );
+      declarations.push(`font-family: 'BionicRead-Lexend', system-ui, sans-serif !important`);
+    }
+    if (effective.dyslexiaMode) {
+      declarations.push(`line-height: ${effective.lineHeight} !important`);
+      declarations.push(`letter-spacing: ${effective.letterSpacing}em !important`);
+      declarations.push(`word-spacing: ${effective.wordSpacing}em !important`);
+    }
+
+    if (rules.length === 0 && declarations.length === 0) {
       if (existing) existing.remove();
       return;
     }
-    const rules = [
-      `line-height: ${effective.lineHeight} !important`,
-      `letter-spacing: ${effective.letterSpacing}em !important`,
-      `word-spacing: ${effective.wordSpacing}em !important`
-    ];
-    const css = `html { ${rules.join('; ')}; }`;
+
+    if (declarations.length > 0) {
+      rules.push(`html { ${declarations.join('; ')}; }`);
+    }
+    const css = rules.join('\n');
     const el = existing || document.createElement('style');
     el.id = DYSLEXIA_STYLE_ID;
     el.textContent = css;
@@ -236,7 +253,7 @@
     }
   }
 
-  function removeDyslexiaStyles() {
+  function removeReadingStyles() {
     const el = document.getElementById(DYSLEXIA_STYLE_ID);
     if (el) el.remove();
   }
@@ -287,14 +304,14 @@
   function deactivate() {
     if (observer) { observer.disconnect(); observer = null; }
     if (active) undo();
-    removeDyslexiaStyles();
+    removeReadingStyles();
     active = false;
   }
 
   function apply() {
     effective = computeEffective();
     if (isEnabledHere()) {
-      applyDyslexiaStyles();
+      applyReadingStyles();
       if (active) {
         // Settings changed — tear down word wrappers and redo with new
         // effective values; keep the dyslexia sheet intact via the

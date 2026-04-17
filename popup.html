@@ -151,6 +151,17 @@
     transition: opacity 0.15s;
   }
   .dot.on { opacity: 1; }
+  .select {
+    background: #1a1a1a;
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .select:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -279,6 +290,17 @@
       <span class="val"><span id="wordSpacingVal">0.10</span> em</span>
     </div>
     <input type="range" id="wordSpacing" min="0" max="30" step="1" value="10">
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label for="readingFont">Reading font</label>
+      <span class="hint">Override body font for easier reading</span>
+    </div>
+    <select id="readingFont" class="select">
+      <option value="off">Off</option>
+      <option value="lexend">Lexend</option>
+    </select>
   </div>
 </div>
 <script src="popup.js"></script>

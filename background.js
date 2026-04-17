@@ -10,6 +10,7 @@ const DEFAULTS = {
   lineHeight: 1.6,
   letterSpacing: 0.05,
   wordSpacing: 0.1,
+  readingFont: 'off',
   siteSettings: {}
 };
 

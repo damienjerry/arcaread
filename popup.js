@@ -10,6 +10,7 @@ const DEFAULTS = {
   lineHeight: 1.6,
   letterSpacing: 0.05,
   wordSpacing: 0.1,
+  readingFont: 'off',
   siteSettings: {}
 };
 
@@ -138,6 +139,10 @@ function render() {
   $('wordSpacingVal').textContent = ws.toFixed(2);
   $('wordSpacing').disabled = !hostname || !dys;
 
+  const font = effectiveValue('readingFont') || 'off';
+  $('readingFont').value = font;
+  $('readingFont').disabled = !hostname;
+
   updateOverrideIndicator();
 }
 
@@ -202,6 +207,10 @@ async function init() {
     const v = parseInt(e.target.value, 10) / 100;
     $('wordSpacingVal').textContent = v.toFixed(2);
     writeSiteOverride('wordSpacing', v);
+  });
+
+  $('readingFont').addEventListener('change', (e) => {
+    writeSiteOverride('readingFont', e.target.value);
   });
 
   $('reset').addEventListener('click', resetSite);

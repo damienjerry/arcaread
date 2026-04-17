@@ -21,5 +21,11 @@
       "match_about_blank": true,
       "match_origin_as_fallback": true
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["fonts/*"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
