@@ -13,8 +13,11 @@
   const SKIP_TAGS = new Set([
     'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT',
     'CODE', 'PRE', 'KBD', 'SAMP', 'VAR', 'TT',
-    'SVG', 'MATH', 'CANVAS', 'IFRAME', 'OBJECT', 'EMBED'
+    'SVG', 'MATH', 'CANVAS', 'IFRAME', 'OBJECT', 'EMBED',
+    'NAV', 'ASIDE', 'FOOTER'
   ]);
+  const SKIP_ROLES_SELECTOR =
+    '[role="navigation"],[role="complementary"],[role="banner"],[role="search"],[role="contentinfo"],[role="menu"],[role="menubar"],[role="tablist"]';
   const PROCESSED_CLASS = 'bionic-processed';
   const ORIGINAL_ATTR = 'data-bionic-original';
 
@@ -39,6 +42,8 @@
     if (el.isContentEditable) return false;
     if (el.closest(`[${ORIGINAL_ATTR}]`)) return false;
     if (el.closest('[contenteditable="true"]')) return false;
+    if (el.closest(SKIP_ROLES_SELECTOR)) return false;
+    if (el.closest('nav, aside, footer')) return false;
     const fontSize = parseFloat(getComputedStyle(el).fontSize);
     if (!isFinite(fontSize) || fontSize < settings.fontSizeThreshold) return false;
     return true;
@@ -102,6 +107,8 @@
         if (!p) return NodeFilter.FILTER_REJECT;
         if (SKIP_TAGS.has(p.tagName)) return NodeFilter.FILTER_REJECT;
         if (p.closest(`[${ORIGINAL_ATTR}]`)) return NodeFilter.FILTER_REJECT;
+        if (p.closest(SKIP_ROLES_SELECTOR)) return NodeFilter.FILTER_REJECT;
+        if (p.closest('nav, aside, footer')) return NodeFilter.FILTER_REJECT;
         if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
