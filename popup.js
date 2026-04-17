@@ -11,6 +11,7 @@ const DEFAULTS = {
   letterSpacing: 0.05,
   wordSpacing: 0.1,
   readingFont: 'off',
+  openPdfsInViewer: false,
   siteSettings: {}
 };
 
@@ -90,6 +91,7 @@ function render() {
   // Global-only toggles
   $('enabled').checked = data.enabled !== false;
   $('processIframes').checked = data.processIframes !== false;
+  $('openPdfsInViewer').checked = data.openPdfsInViewer === true;
 
   // Per-site — display effective value (global, overridden by site if set)
   const siteEnabled = siteOverrides().enabled !== false;
@@ -157,6 +159,7 @@ async function init() {
   // Global toggles write to top-level keys
   $('enabled').addEventListener('change', (e) => writeGlobal('enabled', e.target.checked));
   $('processIframes').addEventListener('change', (e) => writeGlobal('processIframes', e.target.checked));
+  $('openPdfsInViewer').addEventListener('change', (e) => writeGlobal('openPdfsInViewer', e.target.checked));
 
   // Per-site controls write into siteSettings[hostname]
   $('siteEnabled').addEventListener('change', (e) => writeSiteOverride('enabled', e.target.checked));

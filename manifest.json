@@ -3,7 +3,7 @@
   "name": "BionicRead",
   "version": "0.1.0",
   "description": "Bold the first half of each word to speed up reading. Works on any page.",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "webNavigation"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",
@@ -24,7 +24,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["fonts/*"],
+      "resources": ["fonts/*", "vendor/*", "viewer.html", "viewer.js", "core.js"],
       "matches": ["<all_urls>"]
     }
   ]
