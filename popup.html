@@ -239,6 +239,47 @@
     </div>
     <input type="range" id="fontSizeMax" min="18" max="60" step="1" value="24">
   </div>
+
+  <hr>
+
+  <div class="section-label">
+    <span>Dyslexia mode</span>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label for="dyslexiaMode">Enable</label>
+      <span class="hint">Loosen spacing to reduce letter crowding</span>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="dyslexiaMode">
+      <span class="slider-track"></span>
+    </label>
+  </div>
+
+  <div class="col">
+    <div class="label-row">
+      <label for="lineHeight">Line height</label>
+      <span class="val"><span id="lineHeightVal">1.6</span>&times;</span>
+    </div>
+    <input type="range" id="lineHeight" min="10" max="25" step="1" value="16">
+  </div>
+
+  <div class="col">
+    <div class="label-row">
+      <label for="letterSpacing">Letter spacing</label>
+      <span class="val"><span id="letterSpacingVal">0.05</span> em</span>
+    </div>
+    <input type="range" id="letterSpacing" min="0" max="20" step="1" value="5">
+  </div>
+
+  <div class="col">
+    <div class="label-row">
+      <label for="wordSpacing">Word spacing</label>
+      <span class="val"><span id="wordSpacingVal">0.10</span> em</span>
+    </div>
+    <input type="range" id="wordSpacing" min="0" max="30" step="1" value="10">
+  </div>
 </div>
 <script src="popup.js"></script>
 </body>

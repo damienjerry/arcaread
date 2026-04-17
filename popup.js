@@ -6,6 +6,10 @@ const DEFAULTS = {
   intensity: 0.5,
   processIframes: true,
   smartMode: true,
+  dyslexiaMode: false,
+  lineHeight: 1.6,
+  letterSpacing: 0.05,
+  wordSpacing: 0.1,
   siteSettings: {}
 };
 
@@ -115,6 +119,25 @@ function render() {
   $('intensityVal').textContent = Math.round(intensity * 100);
   $('intensity').disabled = !hostname;
 
+  const dys = effectiveValue('dyslexiaMode') === true;
+  $('dyslexiaMode').checked = dys;
+  $('dyslexiaMode').disabled = !hostname;
+
+  const lh = effectiveValue('lineHeight');
+  $('lineHeight').value = Math.round(lh * 10);
+  $('lineHeightVal').textContent = lh.toFixed(1);
+  $('lineHeight').disabled = !hostname || !dys;
+
+  const ls = effectiveValue('letterSpacing');
+  $('letterSpacing').value = Math.round(ls * 100);
+  $('letterSpacingVal').textContent = ls.toFixed(2);
+  $('letterSpacing').disabled = !hostname || !dys;
+
+  const ws = effectiveValue('wordSpacing');
+  $('wordSpacing').value = Math.round(ws * 100);
+  $('wordSpacingVal').textContent = ws.toFixed(2);
+  $('wordSpacing').disabled = !hostname || !dys;
+
   updateOverrideIndicator();
 }
 
@@ -156,6 +179,29 @@ async function init() {
     const pct = parseInt(e.target.value, 10);
     $('intensityVal').textContent = pct;
     writeSiteOverride('intensity', pct / 100);
+  });
+
+  $('dyslexiaMode').addEventListener('change', async (e) => {
+    await writeSiteOverride('dyslexiaMode', e.target.checked);
+    render();
+  });
+
+  $('lineHeight').addEventListener('input', (e) => {
+    const v = parseInt(e.target.value, 10) / 10;
+    $('lineHeightVal').textContent = v.toFixed(1);
+    writeSiteOverride('lineHeight', v);
+  });
+
+  $('letterSpacing').addEventListener('input', (e) => {
+    const v = parseInt(e.target.value, 10) / 100;
+    $('letterSpacingVal').textContent = v.toFixed(2);
+    writeSiteOverride('letterSpacing', v);
+  });
+
+  $('wordSpacing').addEventListener('input', (e) => {
+    const v = parseInt(e.target.value, 10) / 100;
+    $('wordSpacingVal').textContent = v.toFixed(2);
+    writeSiteOverride('wordSpacing', v);
   });
 
   $('reset').addEventListener('click', resetSite);

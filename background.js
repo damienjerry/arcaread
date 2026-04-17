@@ -6,6 +6,10 @@ const DEFAULTS = {
   intensity: 0.5,
   processIframes: true,
   smartMode: true,
+  dyslexiaMode: false,
+  lineHeight: 1.6,
+  letterSpacing: 0.05,
+  wordSpacing: 0.1,
   siteSettings: {}
 };
 

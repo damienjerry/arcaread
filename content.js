@@ -7,6 +7,10 @@
     intensity: 0.5,
     processIframes: true,
     smartMode: true,
+    dyslexiaMode: false,
+    lineHeight: 1.6,
+    letterSpacing: 0.05,
+    wordSpacing: 0.1,
     siteSettings: {}
   };
 
@@ -40,7 +44,11 @@
       fontSizeThreshold: site.fontSizeThreshold ?? settings.fontSizeThreshold,
       fontSizeMax: site.fontSizeMax ?? settings.fontSizeMax,
       intensity: site.intensity ?? settings.intensity,
-      smartMode: site.smartMode ?? settings.smartMode
+      smartMode: site.smartMode ?? settings.smartMode,
+      dyslexiaMode: site.dyslexiaMode ?? settings.dyslexiaMode,
+      lineHeight: site.lineHeight ?? settings.lineHeight,
+      letterSpacing: site.letterSpacing ?? settings.letterSpacing,
+      wordSpacing: site.wordSpacing ?? settings.wordSpacing
     };
   }
 
@@ -186,6 +194,37 @@
     return best;
   }
 
+  const DYSLEXIA_STYLE_ID = 'bionic-dyslexia-style';
+
+  // Dyslexia styling is applied by injecting a low-specificity rule on
+  // <html> so the values inherit down through uninterrupted text, but
+  // any component-level line-height / letter-spacing still wins. That
+  // avoids clobbering site UIs while still reshaping reading prose.
+  function applyDyslexiaStyles() {
+    const existing = document.getElementById(DYSLEXIA_STYLE_ID);
+    if (!effective.dyslexiaMode) {
+      if (existing) existing.remove();
+      return;
+    }
+    const rules = [
+      `line-height: ${effective.lineHeight} !important`,
+      `letter-spacing: ${effective.letterSpacing}em !important`,
+      `word-spacing: ${effective.wordSpacing}em !important`
+    ];
+    const css = `html { ${rules.join('; ')}; }`;
+    const el = existing || document.createElement('style');
+    el.id = DYSLEXIA_STYLE_ID;
+    el.textContent = css;
+    if (!existing) {
+      (document.head || document.documentElement).appendChild(el);
+    }
+  }
+
+  function removeDyslexiaStyles() {
+    const el = document.getElementById(DYSLEXIA_STYLE_ID);
+    if (el) el.remove();
+  }
+
   function undo() {
     const wrappers = document.querySelectorAll(`.${PROCESSED_CLASS}[${ORIGINAL_ATTR}]`);
     wrappers.forEach(w => {
@@ -232,14 +271,21 @@
   function deactivate() {
     if (observer) { observer.disconnect(); observer = null; }
     if (active) undo();
+    removeDyslexiaStyles();
     active = false;
   }
 
   function apply() {
     effective = computeEffective();
     if (isEnabledHere()) {
+      applyDyslexiaStyles();
       if (active) {
-        deactivate();
+        // Settings changed — tear down word wrappers and redo with new
+        // effective values; keep the dyslexia sheet intact via the
+        // applyDyslexiaStyles call above.
+        if (observer) { observer.disconnect(); observer = null; }
+        undo();
+        active = false;
         activate();
       } else {
         activate();
