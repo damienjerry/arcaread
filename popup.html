@@ -191,6 +191,37 @@
   }
   .action:hover:not(:disabled) { background: #222; border-color: #555; }
   .action:disabled { opacity: 0.4; cursor: not-allowed; }
+  details { margin: 0; }
+  details > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color 0.15s;
+  }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary:hover { color: var(--fg); }
+  details > summary::before {
+    content: "›";
+    font-size: 14px;
+    margin-right: 6px;
+    transition: transform 0.15s;
+    display: inline-block;
+  }
+  details[open] > summary::before { transform: rotate(90deg); }
+  details > .details-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 12px;
+  }
 </style>
 </head>
 <body>
@@ -319,67 +350,72 @@
 
   <hr>
 
-  <div class="section-label">
-    <span>Dyslexia mode</span>
-  </div>
+  <details id="dyslexiaDetails">
+    <summary>Dyslexia mode</summary>
+    <div class="details-body">
+      <div class="row">
+        <div class="col">
+          <label for="dyslexiaMode">Enable</label>
+          <span class="hint">Loosen spacing to reduce letter crowding</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="dyslexiaMode">
+          <span class="slider-track"></span>
+        </label>
+      </div>
 
-  <div class="row">
-    <div class="col">
-      <label for="dyslexiaMode">Enable</label>
-      <span class="hint">Loosen spacing to reduce letter crowding</span>
-    </div>
-    <label class="switch">
-      <input type="checkbox" id="dyslexiaMode">
-      <span class="slider-track"></span>
-    </label>
-  </div>
+      <div class="col">
+        <div class="label-row">
+          <label for="lineHeight">Line height</label>
+          <span class="val"><span id="lineHeightVal">1.6</span>&times;</span>
+        </div>
+        <input type="range" id="lineHeight" min="10" max="25" step="1" value="16">
+      </div>
 
-  <div class="col">
-    <div class="label-row">
-      <label for="lineHeight">Line height</label>
-      <span class="val"><span id="lineHeightVal">1.6</span>&times;</span>
-    </div>
-    <input type="range" id="lineHeight" min="10" max="25" step="1" value="16">
-  </div>
+      <div class="col">
+        <div class="label-row">
+          <label for="letterSpacing">Letter spacing</label>
+          <span class="val"><span id="letterSpacingVal">0.05</span> em</span>
+        </div>
+        <input type="range" id="letterSpacing" min="0" max="20" step="1" value="5">
+      </div>
 
-  <div class="col">
-    <div class="label-row">
-      <label for="letterSpacing">Letter spacing</label>
-      <span class="val"><span id="letterSpacingVal">0.05</span> em</span>
-    </div>
-    <input type="range" id="letterSpacing" min="0" max="20" step="1" value="5">
-  </div>
+      <div class="col">
+        <div class="label-row">
+          <label for="wordSpacing">Word spacing</label>
+          <span class="val"><span id="wordSpacingVal">0.10</span> em</span>
+        </div>
+        <input type="range" id="wordSpacing" min="0" max="30" step="1" value="10">
+      </div>
 
-  <div class="col">
-    <div class="label-row">
-      <label for="wordSpacing">Word spacing</label>
-      <span class="val"><span id="wordSpacingVal">0.10</span> em</span>
+      <div class="row">
+        <div class="col">
+          <label for="readingFont">Reading font</label>
+          <span class="hint">Override body font for easier reading</span>
+        </div>
+        <select id="readingFont" class="select">
+          <option value="off">Off</option>
+          <option value="lexend">Lexend</option>
+        </select>
+      </div>
     </div>
-    <input type="range" id="wordSpacing" min="0" max="30" step="1" value="10">
-  </div>
-
-  <div class="row">
-    <div class="col">
-      <label for="readingFont">Reading font</label>
-      <span class="hint">Override body font for easier reading</span>
-    </div>
-    <select id="readingFont" class="select">
-      <option value="off">Off</option>
-      <option value="lexend">Lexend</option>
-    </select>
-  </div>
+  </details>
 
   <hr>
 
-  <div class="section-label">
-    <span>Reading time</span>
-    <button class="reset" id="resetStats" type="button">Reset</button>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="stat-label">Today</div><div class="stat-val" id="statToday">0s</div></div>
-    <div class="stat"><div class="stat-label">All time</div><div class="stat-val" id="statTotal">0s</div></div>
-    <div class="stat"><div class="stat-label">WPM</div><div class="stat-val" id="statWpm">—</div></div>
-  </div>
+  <details id="statsDetails">
+    <summary>
+      <span>Reading time</span>
+      <button class="reset" id="resetStats" type="button" onclick="event.preventDefault();event.stopPropagation();">Reset</button>
+    </summary>
+    <div class="details-body">
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Today</div><div class="stat-val" id="statToday">0s</div></div>
+        <div class="stat"><div class="stat-label">All time</div><div class="stat-val" id="statTotal">0s</div></div>
+        <div class="stat"><div class="stat-label">WPM</div><div class="stat-val" id="statWpm">—</div></div>
+      </div>
+    </div>
+  </details>
 </div>
 <script src="core.js"></script>
 <script src="popup.js"></script>

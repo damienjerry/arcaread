@@ -288,6 +288,18 @@ async function init() {
 
   $('openReader').disabled = !hostname;
   $('openReader').addEventListener('click', openInReader);
+
+  // Remember which sections the user left expanded.
+  for (const id of ['dyslexiaDetails', 'statsDetails']) {
+    const el = $(id);
+    const key = 'focusread-open:' + id;
+    try {
+      if (localStorage.getItem(key) === '1') el.open = true;
+    } catch {}
+    el.addEventListener('toggle', () => {
+      try { localStorage.setItem(key, el.open ? '1' : '0'); } catch {}
+    });
+  }
 }
 
 async function openInReader() {
