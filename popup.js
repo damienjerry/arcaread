@@ -3,6 +3,7 @@ const DEFAULTS = {
   minWordLength: 4,
   fontSizeThreshold: 14,
   processIframes: true,
+  smartMode: true,
   siteOverrides: {}
 };
 
@@ -30,6 +31,7 @@ async function init() {
 
   $('enabled').checked = data.enabled !== false;
   $('processIframes').checked = data.processIframes !== false;
+  $('smartMode').checked = data.smartMode !== false;
   $('minWordLength').value = data.minWordLength;
   $('minWordLengthVal').textContent = data.minWordLength;
   $('fontSizeThreshold').value = data.fontSizeThreshold;
@@ -50,6 +52,10 @@ async function init() {
 
   $('processIframes').addEventListener('change', (e) => {
     chrome.storage.sync.set({ processIframes: e.target.checked });
+  });
+
+  $('smartMode').addEventListener('change', (e) => {
+    chrome.storage.sync.set({ smartMode: e.target.checked });
   });
 
   siteEl.addEventListener('change', async (e) => {

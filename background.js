@@ -3,6 +3,7 @@ const DEFAULTS = {
   minWordLength: 4,
   fontSizeThreshold: 14,
   processIframes: true,
+  smartMode: true,
   siteOverrides: {}
 };
 

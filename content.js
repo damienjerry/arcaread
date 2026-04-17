@@ -4,6 +4,7 @@
     minWordLength: 4,
     fontSizeThreshold: 14,
     processIframes: true,
+    smartMode: true,
     siteOverrides: {}
   };
 
@@ -115,6 +116,80 @@
     for (const n of nodes) processTextNode(n);
   }
 
+  function wordCount(el) {
+    const text = (el.textContent || '').trim();
+    if (!text) return 0;
+    return text.split(/\s+/).length;
+  }
+
+  function linkDensity(el) {
+    const textLen = (el.textContent || '').length;
+    if (textLen === 0) return 1;
+    let linkTextLen = 0;
+    el.querySelectorAll('a').forEach(a => {
+      linkTextLen += (a.textContent || '').length;
+    });
+    return linkTextLen / textLen;
+  }
+
+  // Heuristically identify the article root so we only bold real prose,
+  // not nav, sidebars, ads, or footers. Returns null if nothing obvious —
+  // caller falls back to processing the whole body (app-style pages).
+  function findArticleRoot() {
+    const MIN_WORDS = 150;
+    const MAX_LINK_DENSITY = 0.4;
+
+    // 1. <main> if it has substantial text
+    const main = document.querySelector('main, [role="main"]');
+    if (main && wordCount(main) >= MIN_WORDS && linkDensity(main) < MAX_LINK_DENSITY) {
+      return main;
+    }
+
+    // 2. A single <article> (not a feed)
+    const articles = document.querySelectorAll('article, [role="article"]');
+    if (articles.length === 1) {
+      const art = articles[0];
+      if (wordCount(art) >= MIN_WORDS && linkDensity(art) < MAX_LINK_DENSITY) {
+        return art;
+      }
+    }
+
+    // 3. Common CMS/blog class names
+    const classSelectors = [
+      '.post-content', '.entry-content', '.article-content', '.article-body',
+      '.post-body', '#article-body', '.story-body', '.markdown-body'
+    ];
+    for (const sel of classSelectors) {
+      const el = document.querySelector(sel);
+      if (el && wordCount(el) >= MIN_WORDS && linkDensity(el) < MAX_LINK_DENSITY) {
+        return el;
+      }
+    }
+
+    // 4. Density scoring fallback — pick the div/section with the highest
+    //    text-to-link-and-chrome score.
+    let best = null;
+    let bestScore = 0;
+    const candidates = document.querySelectorAll('div, section');
+    for (const el of candidates) {
+      const paragraphs = el.querySelectorAll('p');
+      if (paragraphs.length < 4) continue;
+      const words = wordCount(el);
+      if (words < 250) continue;
+      const density = linkDensity(el);
+      if (density > 0.3) continue;
+      // Prefer narrower containers: smaller DOM size for the same text = better.
+      const domSize = el.getElementsByTagName('*').length || 1;
+      const score = words / domSize + paragraphs.length * 2 - density * 10;
+      if (score > bestScore) {
+        bestScore = score;
+        best = el;
+      }
+    }
+
+    return best;
+  }
+
   function undo() {
     const wrappers = document.querySelectorAll(`.${PROCESSED_CLASS}[${ORIGINAL_ATTR}]`);
     wrappers.forEach(w => {
@@ -129,7 +204,13 @@
   function activate() {
     if (active || !document.body) return;
     active = true;
-    processSubtree(document.body);
+
+    // Smart mode: try to narrow to the article body. If nothing scores
+    // (app-like pages, short pages, Gmail) we fall back to the full body.
+    const detected = settings.smartMode ? findArticleRoot() : null;
+    const root = detected || document.body;
+
+    processSubtree(root);
     observer = new MutationObserver(mutations => {
       for (const m of mutations) {
         if (m.type === 'childList') {
@@ -147,7 +228,7 @@
         }
       }
     });
-    observer.observe(document.body, {
+    observer.observe(root, {
       childList: true,
       subtree: true,
       characterData: true
