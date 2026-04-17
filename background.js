@@ -2,6 +2,7 @@ const DEFAULTS = {
   enabled: true,
   minWordLength: 4,
   fontSizeThreshold: 14,
+  processIframes: true,
   siteOverrides: {}
 };
 

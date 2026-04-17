@@ -2,6 +2,7 @@ const DEFAULTS = {
   enabled: true,
   minWordLength: 4,
   fontSizeThreshold: 14,
+  processIframes: true,
   siteOverrides: {}
 };
 
@@ -28,6 +29,7 @@ async function init() {
   const data = await chrome.storage.sync.get(DEFAULTS);
 
   $('enabled').checked = data.enabled !== false;
+  $('processIframes').checked = data.processIframes !== false;
   $('minWordLength').value = data.minWordLength;
   $('minWordLengthVal').textContent = data.minWordLength;
   $('fontSizeThreshold').value = data.fontSizeThreshold;
@@ -44,6 +46,10 @@ async function init() {
 
   $('enabled').addEventListener('change', (e) => {
     chrome.storage.sync.set({ enabled: e.target.checked });
+  });
+
+  $('processIframes').addEventListener('change', (e) => {
+    chrome.storage.sync.set({ processIframes: e.target.checked });
   });
 
   siteEl.addEventListener('change', async (e) => {

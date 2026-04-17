@@ -3,8 +3,11 @@
     enabled: true,
     minWordLength: 4,
     fontSizeThreshold: 14,
+    processIframes: true,
     siteOverrides: {}
   };
+
+  const inTopFrame = window.top === window.self;
 
   const SKIP_TAGS = new Set([
     'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT',
@@ -20,6 +23,7 @@
 
   function isEnabledForSite() {
     if (!settings.enabled) return false;
+    if (!inTopFrame && !settings.processIframes) return false;
     const override = settings.siteOverrides?.[location.hostname];
     return override !== false;
   }
