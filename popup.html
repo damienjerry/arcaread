@@ -5,12 +5,12 @@
 <title>FocusRead</title>
 <style>
   :root {
-    --bg: #1b1917;         /* warm charcoal — softer than pure black */
-    --surface: #242220;    /* slightly raised cards */
-    --fg: #ededed;         /* off-white, not glare-white */
-    --muted: #8a8680;      /* warm muted */
-    --border: #2f2c2a;
-    --accent: #7DCFA6;     /* sage, matches icon + reader highlights */
+    --bg: #faf7f0;         /* warm paper cream */
+    --surface: #ffffff;    /* raised white cards */
+    --fg: #1f1c18;         /* warm near-black ink */
+    --muted: #78726a;      /* warm muted */
+    --border: #e4ddd0;
+    --accent: #2d7a55;     /* deeper sage for contrast on light */
   }
   * { box-sizing: border-box; }
   html, body {
@@ -86,7 +86,7 @@
     position: absolute;
     cursor: pointer;
     inset: 0;
-    background: #3a3633;
+    background: #d4ccbf;
     border-radius: 18px;
     transition: background 0.15s;
   }
@@ -97,9 +97,10 @@
     width: 14px;
     left: 2px;
     top: 2px;
-    background: #ededed;
+    background: #ffffff;
     border-radius: 50%;
     transition: transform 0.15s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12);
   }
   input:checked + .slider-track { background: var(--accent); }
   input:checked + .slider-track::before {
@@ -117,7 +118,7 @@
   }
   input[type="range"]::-webkit-slider-runnable-track {
     height: 2px;
-    background: #3a3633;
+    background: #d4ccbf;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -160,7 +161,7 @@
     padding: 10px 12px;
     font-size: 13px;
     line-height: 1.5;
-    color: #cfc9c1;
+    color: #4a463f;
   }
   .preview b { color: var(--fg); font-weight: 700; }
   .select {
@@ -191,7 +192,7 @@
     text-align: center;
     transition: background 0.15s, border-color 0.15s;
   }
-  .action:hover:not(:disabled) { background: #2e2a27; border-color: #4a4643; }
+  .action:hover:not(:disabled) { background: #f0ece4; border-color: #c9c1b3; }
   .action:disabled { opacity: 0.4; cursor: not-allowed; }
   details { margin: 0; }
   details > summary {

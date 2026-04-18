@@ -5,18 +5,19 @@
 <title>FocusRead</title>
 <style>
   :root {
-    --bg: #1b1917;         /* warm charcoal default */
-    --fg: #ededed;
-    --bold: #ffffff;
-    --muted: #8a8680;
-    --border: #2f2c2a;
-    --link: #9ec5ff;
-    --accent: #7DCFA6;
+    --bg: #faf7f0;         /* warm paper cream default */
+    --fg: #1f1c18;
+    --bold: #000000;
+    --muted: #78726a;
+    --border: #e4ddd0;
+    --link: #1558d6;
+    --accent: #2d7a55;
   }
   html.tint-sepia    { --bg: #f5ecd7; --fg: #3d2f1e; --bold: #1a1208; --muted: #8a7357; --border: #d9c9aa; --link: #8c5a1e; }
   html.tint-paper    { --bg: #ffffff; --fg: #1a1a1a; --bold: #000; --muted: #666; --border: #ddd; --link: #1558d6; }
   html.tint-solarized{ --bg: #fdf6e3; --fg: #586e75; --bold: #073642; --muted: #93a1a1; --border: #eee8d5; --link: #268bd2; }
-  html.tint-dim      { --bg: #0a0a0a; --fg: #b8b8b8; --bold: #e8e8e8; --muted: #666; --border: #222; --link: #6ea0e0; }
+  html.tint-dim      { --bg: #1b1917; --fg: #ededed; --bold: #ffffff; --muted: #8a8680; --border: #2f2c2a; --link: #9ec5ff; --accent: #7DCFA6; }
+  html.tint-night    { --bg: #0a0a0a; --fg: #b8b8b8; --bold: #e8e8e8; --muted: #666;    --border: #222;    --link: #6ea0e0; --accent: #7DCFA6; }
 
   * { box-sizing: border-box; }
   html, body {
@@ -170,11 +171,11 @@
   <button id="chunks" title="Speed read in chunks">Chunks</button>
   <button id="summarize" title="On-device AI summary (Chrome Nano)">Summarize</button>
   <select id="tint" title="Tint">
-    <option value="off">Night</option>
-    <option value="dim">Dim</option>
+    <option value="off">Paper (light)</option>
     <option value="sepia">Sepia</option>
     <option value="solarized">Solarized</option>
-    <option value="paper">Paper</option>
+    <option value="dim">Dim</option>
+    <option value="night">Night</option>
   </select>
   <button id="exit" title="Back to original">Exit</button>
 </div>
