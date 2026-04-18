@@ -313,19 +313,31 @@ async function openInReader() {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) throw new Error('No active tab');
-    const resp = await chrome.tabs.sendMessage(tab.id, { type: 'extract-article' });
-    if (!resp?.ok || !resp.article) throw new Error('Could not extract article');
+    if (!/^https?:/.test(tab.url || '')) {
+      throw new Error('Reader only works on http(s) pages, not ' + (tab.url || '').slice(0, 30));
+    }
+    let resp;
+    try {
+      resp = await chrome.tabs.sendMessage(tab.id, { type: 'extract-article' });
+    } catch (msgErr) {
+      throw new Error('Content script not responding — reload the tab first. (' + msgErr.message + ')');
+    }
+    if (!resp) throw new Error('No response from content script');
+    if (!resp.ok || !resp.article) throw new Error(resp.error || 'Could not extract article');
     const id = String(Date.now());
     await chrome.storage.session.set({ ['article:' + id]: resp.article });
     const url = chrome.runtime.getURL('reader.html') + '?id=' + encodeURIComponent(id);
     await chrome.tabs.create({ url });
     window.close();
   } catch (e) {
-    btn.textContent = 'Failed — try again';
+    console.error('[FocusRead] Open in Reader failed:', e);
+    btn.textContent = e.message || 'Failed — try again';
+    btn.title = e.message || '';
     setTimeout(() => {
       btn.textContent = 'Open this page in Reader';
+      btn.title = '';
       btn.disabled = !hostname;
-    }, 1500);
+    }, 4500);
   }
 }
 
