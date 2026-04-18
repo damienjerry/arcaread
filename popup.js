@@ -278,7 +278,11 @@ async function init() {
     writeSiteOverride('focusMode', e.target.checked);
   });
 
-  $('resetStats').addEventListener('click', async () => {
+  $('resetStats').addEventListener('click', async (e) => {
+    // Button lives inside a <summary>; stop the click so it doesn't
+    // toggle the details pane.
+    e.preventDefault();
+    e.stopPropagation();
     if (!confirm('Reset reading time?')) return;
     await chrome.runtime.sendMessage({ type: 'focusread-reset-analytics' });
     renderAnalytics();
