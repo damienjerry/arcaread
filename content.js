@@ -29,10 +29,10 @@
     'SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT',
     'CODE', 'PRE', 'KBD', 'SAMP', 'VAR', 'TT',
     'SVG', 'MATH', 'CANVAS', 'IFRAME', 'OBJECT', 'EMBED',
-    'NAV', 'ASIDE', 'FOOTER'
+    'NAV', 'ASIDE', 'FOOTER', 'DIALOG'
   ]);
   const SKIP_ROLES_SELECTOR =
-    '[role="navigation"],[role="complementary"],[role="banner"],[role="search"],[role="contentinfo"],[role="menu"],[role="menubar"],[role="tablist"]';
+    '[role="navigation"],[role="complementary"],[role="banner"],[role="search"],[role="contentinfo"],[role="menu"],[role="menubar"],[role="tablist"],[role="dialog"],[role="alertdialog"],[role="tooltip"],[aria-hidden="true"]';
   const PROCESSED_CLASS = 'focusread-processed';
   const ORIGINAL_ATTR = 'data-focusread-original';
 
@@ -443,7 +443,7 @@
       }
     });
     // Drop nav / complementary / hidden stuff that slipped inside.
-    clone.querySelectorAll('nav, aside, footer, [role="navigation"], [role="complementary"], [role="banner"], [aria-hidden="true"], [hidden]').forEach(el => el.remove());
+    clone.querySelectorAll('nav, aside, footer, dialog, [role="navigation"], [role="complementary"], [role="banner"], [role="dialog"], [role="alertdialog"], [role="tooltip"], [aria-hidden="true"], [hidden]').forEach(el => el.remove());
     // Absolutize image srcs so they still resolve from the reader origin.
     clone.querySelectorAll('img[src]').forEach(img => {
       try { img.src = new URL(img.getAttribute('src'), location.href).href; } catch {}
