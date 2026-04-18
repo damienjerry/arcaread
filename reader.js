@@ -260,13 +260,24 @@ async function streamingSummarize(summarizer, text, onPartial) {
 
 // Strip markers and chrome that waste Nano's context without adding
 // information — citation brackets, footnote refs, stray bracketed
-// annotations (e.g. "[edit]", "[citation needed]").
+// annotations (e.g. "[edit]", "[citation needed]"), and truncate the
+// text at boilerplate headings Wikipedia/news sites use to end the
+// article body (References, See also, etc.).
+const TAIL_HEADING_RE =
+  /\b(References|Bibliography|External links|See also|Further reading|Notes|Citations|Sources|Footnotes|Works cited|Related articles|Comments)\b/i;
+
 function cleanForSummary(text) {
-  return text
+  let t = text
     .replace(/\[\d+\]/g, '')
     .replace(/\[[^\]]{1,24}\]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
+  const cutoff = t.search(TAIL_HEADING_RE);
+  // Only truncate if the boilerplate heading appears well past the
+  // lede — otherwise a passing mention ("references to Homer") would
+  // lop off the whole article.
+  if (cutoff > 400) t = t.slice(0, cutoff).trim();
+  return t;
 }
 
 summarizeBtn.addEventListener('click', runSummarize);
