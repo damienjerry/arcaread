@@ -17,8 +17,12 @@ const DEFAULTS = {
   siteSettings: {}
 };
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(async (details) => {
   const existing = await chrome.storage.sync.get(null);
+  // First-run welcome: shown on fresh install only, not on updates.
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') });
+  }
   if (existing.siteOverrides) {
     const siteSettings = { ...(existing.siteSettings || {}) };
     for (const [host, enabled] of Object.entries(existing.siteOverrides)) {
