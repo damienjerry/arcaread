@@ -3,7 +3,7 @@
   "name": "FocusRead",
   "version": "0.1.0",
   "description": "Focus on the first half of each word to speed up reading. Works on any page.",
-  "permissions": ["storage", "activeTab", "webNavigation"],
+  "permissions": ["storage", "activeTab", "webNavigation", "scripting"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_popup": "popup.html",

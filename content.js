@@ -1,4 +1,10 @@
 (() => {
+  // Guard against double-injection. If the popup scripts us into a tab
+  // that already has content.js running, skip this IIFE's body so we
+  // don't spawn a second MutationObserver and tick loop.
+  if (window.__focusread_loaded) return;
+  window.__focusread_loaded = true;
+
   const DEFAULTS = {
     enabled: true,
     minWordLength: 4,

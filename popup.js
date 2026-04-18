@@ -316,11 +316,25 @@ async function openInReader() {
     if (!/^https?:/.test(tab.url || '')) {
       throw new Error('Reader only works on http(s) pages, not ' + (tab.url || '').slice(0, 30));
     }
+    // The content script may not be in this tab yet — it only auto-injects
+    // into new navigations after the extension is installed/reloaded.
+    // Try sendMessage; if it fails, inject on demand and retry.
+    async function ask() {
+      return chrome.tabs.sendMessage(tab.id, { type: 'extract-article' });
+    }
     let resp;
     try {
-      resp = await chrome.tabs.sendMessage(tab.id, { type: 'extract-article' });
-    } catch (msgErr) {
-      throw new Error('Content script not responding — reload the tab first. (' + msgErr.message + ')');
+      resp = await ask();
+    } catch {
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id, allFrames: false },
+          files: ['core.js', 'content.js']
+        });
+        resp = await ask();
+      } catch (injErr) {
+        throw new Error('Could not inject into this tab: ' + (injErr.message || injErr));
+      }
     }
     if (!resp) throw new Error('No response from content script');
     if (!resp.ok || !resp.article) throw new Error(resp.error || 'Could not extract article');
