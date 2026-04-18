@@ -165,7 +165,9 @@ async function getSummarizer() {
     const summarizer = await create({
       type: 'tldr',
       format: 'plain-text',
-      length: 'medium'
+      length: 'medium',
+      expectedInputLanguages: ['en'],
+      outputLanguage: 'en'
     });
     return { summarizer };
   } catch (e) {
