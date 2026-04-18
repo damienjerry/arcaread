@@ -175,8 +175,28 @@ async function getSummarizer() {
   }
 }
 
+// Break text into roughly-equal chunks at paragraph boundaries so each
+// piece fits in Chrome Nano's context window. ~3500 chars is conservative.
+function chunkText(text, maxChars = 3500) {
+  const paragraphs = text.split(/\n{2,}|(?<=\.)\s+(?=[A-Z])/g);
+  const chunks = [];
+  let current = '';
+  for (const p of paragraphs) {
+    const piece = p.trim();
+    if (!piece) continue;
+    if (current.length + piece.length + 2 > maxChars && current) {
+      chunks.push(current);
+      current = piece;
+    } else {
+      current = current ? current + '\n\n' + piece : piece;
+    }
+  }
+  if (current) chunks.push(current);
+  return chunks;
+}
+
 async function runSummarize() {
-  const text = (articleEl.textContent || '').trim();
+  const text = (articleEl.textContent || '').replace(/\s+/g, ' ').trim();
   if (!text) return;
   summarizeBtn.disabled = true;
   summarizeBtn.textContent = 'Thinking…';
@@ -192,18 +212,11 @@ async function runSummarize() {
   }
 
   try {
-    // Some builds of Chrome Nano support streaming. Fall back to non-stream.
-    if (typeof summarizer.summarizeStreaming === 'function') {
-      const stream = summarizer.summarizeStreaming(text);
-      for await (const chunk of stream) {
-        summaryText.textContent = chunk;
-      }
-    } else {
-      const out = await summarizer.summarize(text);
-      summaryText.textContent = out;
-    }
-    // Apply bionic to the generated summary so it matches the page style.
-    const { segments } = FocusCore.transform(summaryText.textContent, chunkSettings);
+    let out = await safeSummarize(summarizer, text, (msg) => {
+      summaryText.textContent = msg;
+    });
+    summaryText.textContent = out;
+    const { segments } = FocusCore.transform(out, chunkSettings);
     summaryText.innerHTML = FocusCore.toHtml(segments);
   } catch (e) {
     summaryText.textContent = `Couldn't summarise: ${e.message || e}`;
@@ -212,6 +225,38 @@ async function runSummarize() {
     summarizeBtn.disabled = false;
     summarizeBtn.textContent = 'Summarize';
   }
+}
+
+// Map-reduce summarisation. If the text fits in one pass we do that
+// directly. Otherwise chunk, summarise each piece, concatenate the
+// partial summaries, then summarise the concatenation recursively.
+async function safeSummarize(summarizer, text, progress) {
+  // First try the whole thing — fastest path.
+  try {
+    return await summarizer.summarize(text);
+  } catch (e) {
+    if (!/too large|too long|exceeds|context|quota/i.test(String(e))) throw e;
+  }
+  const chunks = chunkText(text);
+  if (chunks.length <= 1) {
+    // Couldn't split further; truncate.
+    return summarizer.summarize(text.slice(0, 3000));
+  }
+  progress?.(`Summarising ${chunks.length} sections…`);
+  const partials = [];
+  for (let i = 0; i < chunks.length; i++) {
+    progress?.(`Summarising section ${i + 1} of ${chunks.length}…`);
+    try {
+      partials.push(await summarizer.summarize(chunks[i]));
+    } catch {}
+  }
+  if (!partials.length) throw new Error('No section could be summarised');
+  const combined = partials.join('\n\n');
+  if (combined.length <= 3500) {
+    return partials.length === 1 ? partials[0] : await summarizer.summarize(combined);
+  }
+  progress?.('Condensing…');
+  return safeSummarize(summarizer, combined, progress);
 }
 
 summarizeBtn.addEventListener('click', runSummarize);
