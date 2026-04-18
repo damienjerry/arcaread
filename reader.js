@@ -163,7 +163,7 @@ async function getSummarizer() {
     const create = ns.create?.bind(ns) || root.ai?.summarizer?.create;
     if (!create) return { reason: 'Summarizer API not present.' };
     const summarizer = await create({
-      type: 'tl;dr',
+      type: 'tldr',
       format: 'plain-text',
       length: 'medium'
     });
