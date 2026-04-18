@@ -83,6 +83,27 @@
   article b, article strong { color: var(--bold); font-weight: 700; }
   article .speaking { background: rgba(125, 207, 166, 0.18); border-radius: 3px; }
   .status { text-align: center; color: var(--muted); padding: 40px 16px; font-size: 13px; }
+  .summary {
+    border: 1px solid var(--border);
+    border-left: 3px solid #7DCFA6;
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 0 0 32px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--fg);
+    background: rgba(125, 207, 166, 0.04);
+  }
+  .summary-label {
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #7DCFA6;
+    margin-bottom: 8px;
+    font-family: -apple-system, sans-serif;
+    font-weight: 600;
+  }
+  .summary[hidden] { display: none; }
   /* Chunk mode overlay */
   .chunk-view {
     position: fixed;
@@ -146,6 +167,7 @@
   <span class="src" id="src">—</span>
   <button id="play" title="Read aloud">▶</button>
   <button id="chunks" title="Speed read in chunks">Chunks</button>
+  <button id="summarize" title="On-device AI summary (Chrome Nano)">Summarize</button>
   <select id="tint" title="Tint">
     <option value="off">Night</option>
     <option value="dim">Dim</option>
@@ -159,6 +181,10 @@
   <div class="status" id="status">Loading…</div>
   <h1 class="title" id="title"></h1>
   <div class="meta" id="meta"></div>
+  <div class="summary" id="summary" hidden>
+    <div class="summary-label">TL;DR · on-device AI</div>
+    <div id="summaryText"></div>
+  </div>
   <article id="article"></article>
 </main>
 <div class="chunk-view" id="chunkView" hidden>

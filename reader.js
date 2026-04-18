@@ -13,6 +13,9 @@ const srcEl = document.getElementById('src');
 const playBtn = document.getElementById('play');
 const tintSel = document.getElementById('tint');
 const exitBtn = document.getElementById('exit');
+const summarizeBtn = document.getElementById('summarize');
+const summaryBox = document.getElementById('summary');
+const summaryText = document.getElementById('summaryText');
 
 function setStatus(msg, isError) {
   statusEl.textContent = msg;
@@ -135,6 +138,81 @@ tintSel.addEventListener('change', (e) => applyTint(e.target.value));
     applyTint(saved);
   } catch {}
 })();
+
+// ---------- Summarize (Chrome on-device AI) ----------
+
+// Chrome exposes window.ai in Chrome 127+ when the Gemini Nano model is
+// available. The API is still stabilising so we feature-detect defensively
+// and show a clear message rather than a broken button on other browsers.
+async function getSummarizer() {
+  const root = self;
+  const ns = root.ai?.summarizer || root.Summarizer || root.ai;
+  if (!ns) return { reason: 'Chrome on-device AI is not available in this browser. Requires Chrome 127+ with Gemini Nano enabled.' };
+  try {
+    if (typeof ns.availability === 'function') {
+      const status = await ns.availability();
+      if (status === 'unavailable' || status === 'no') {
+        return { reason: 'On-device AI is not available on this machine yet.' };
+      }
+    } else if (typeof ns.capabilities === 'function') {
+      const caps = await ns.capabilities();
+      if (caps.available === 'no') {
+        return { reason: 'On-device AI is not available on this machine yet.' };
+      }
+    }
+    const create = ns.create?.bind(ns) || root.ai?.summarizer?.create;
+    if (!create) return { reason: 'Summarizer API not present.' };
+    const summarizer = await create({
+      type: 'tl;dr',
+      format: 'plain-text',
+      length: 'medium'
+    });
+    return { summarizer };
+  } catch (e) {
+    return { reason: `AI init failed: ${e.message || e}` };
+  }
+}
+
+async function runSummarize() {
+  const text = (articleEl.textContent || '').trim();
+  if (!text) return;
+  summarizeBtn.disabled = true;
+  summarizeBtn.textContent = 'Thinking…';
+  summaryBox.hidden = false;
+  summaryText.textContent = '';
+
+  const { summarizer, reason } = await getSummarizer();
+  if (!summarizer) {
+    summaryText.textContent = reason;
+    summarizeBtn.disabled = false;
+    summarizeBtn.textContent = 'Summarize';
+    return;
+  }
+
+  try {
+    // Some builds of Chrome Nano support streaming. Fall back to non-stream.
+    if (typeof summarizer.summarizeStreaming === 'function') {
+      const stream = summarizer.summarizeStreaming(text);
+      for await (const chunk of stream) {
+        summaryText.textContent = chunk;
+      }
+    } else {
+      const out = await summarizer.summarize(text);
+      summaryText.textContent = out;
+    }
+    // Apply bionic to the generated summary so it matches the page style.
+    const { segments } = FocusCore.transform(summaryText.textContent, chunkSettings);
+    summaryText.innerHTML = FocusCore.toHtml(segments);
+  } catch (e) {
+    summaryText.textContent = `Couldn't summarise: ${e.message || e}`;
+  } finally {
+    summarizer.destroy?.();
+    summarizeBtn.disabled = false;
+    summarizeBtn.textContent = 'Summarize';
+  }
+}
+
+summarizeBtn.addEventListener('click', runSummarize);
 
 exitBtn.addEventListener('click', () => {
   window.speechSynthesis.cancel();
