@@ -63,7 +63,8 @@
     font: inherit;
     font-size: 12px;
   }
-  .bar button:hover { background: rgba(255,255,255,0.05); }
+  .bar button:hover:not(:disabled) { background: rgba(125, 125, 125, 0.08); }
+  .bar button:disabled { opacity: 0.4; cursor: not-allowed; }
   .bar select { padding: 4px 6px; }
   main {
     max-width: 720px;
@@ -167,9 +168,9 @@
 <div class="bar">
   <h1><b>Foc</b>us<b>Re</b>ad</h1>
   <span class="src" id="src">—</span>
-  <button id="play" title="Read aloud">▶</button>
-  <button id="chunks" title="Speed read in chunks">Chunks</button>
-  <button id="summarize" title="On-device AI summary (Chrome Nano)">Summarize</button>
+  <button id="play" title="Read aloud" disabled>▶</button>
+  <button id="chunks" title="Speed read in chunks" disabled>Chunks</button>
+  <button id="summarize" title="On-device AI summary (Chrome Nano)" disabled>Summarize</button>
   <select id="tint" title="Tint">
     <option value="off">Paper (light)</option>
     <option value="sepia">Sepia</option>

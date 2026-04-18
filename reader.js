@@ -204,7 +204,7 @@ async function runSummarize() {
       summaryText.textContent = partial;
     });
     summaryText.textContent = out;
-    const { segments } = FocusCore.transform(out, chunkSettings);
+    const { segments } = FocusCore.transform(out, bionicSettings);
     summaryText.innerHTML = FocusCore.toHtml(segments);
     if (truncated) {
       const note = document.createElement('div');
@@ -309,7 +309,8 @@ const chunksBtn = document.getElementById('chunks');
 let chunkWords = [];
 let chunkIdx = 0;
 let chunkTimer = null;
-let chunkSettings = { minWordLength: 4, intensity: 0.5 };
+let lastChunkSize = 2;
+let bionicSettings = { minWordLength: 4, intensity: 0.5 };
 
 function chunkSize() { return parseInt(chunkSizeSel.value, 10) || 2; }
 function chunkWpm() { return parseInt(chunkWpmInput.value, 10) || 300; }
@@ -336,7 +337,7 @@ function renderChunk() {
     return;
   }
   const joined = slice.join(' ');
-  const { segments } = FocusCore.transform(joined, chunkSettings);
+  const { segments } = FocusCore.transform(joined, bionicSettings);
   chunkDisplay.innerHTML = FocusCore.toHtml(segments);
   chunkPosEl.textContent = String(chunkIdx + 1);
   chunkTotalEl.textContent = String(chunkTotal());
@@ -395,8 +396,11 @@ chunkNextBtn.addEventListener('click', () => {
 });
 chunkSizeSel.addEventListener('change', () => {
   // Preserve approximate reading position across chunk-size changes.
-  const wordPos = chunkIdx * (chunkSize());
-  chunkIdx = Math.floor(wordPos / chunkSize());
+  // The dropdown has already updated, so we need the *previous* size —
+  // tracked in lastChunkSize.
+  const wordPos = chunkIdx * lastChunkSize;
+  lastChunkSize = chunkSize();
+  chunkIdx = Math.floor(wordPos / lastChunkSize);
   renderChunk();
   if (chunkTimer) playChunks();
 });
@@ -459,10 +463,14 @@ async function render() {
   metaEl.innerHTML = `<a href="${payload.url}" style="color: inherit">${payload.host}</a> · ${mins} min read${payload.detected ? '' : ' · (no article detected — showing page content)'}`;
 
   const settings = await loadSettings(payload.host);
-  chunkSettings = settings;
+  bionicSettings = settings;
   bionicifyText(articleEl, settings);
   collectParagraphs();
   setStatus('');
+  // Article is ready; unlock the toolbar actions that depend on it.
+  summarizeBtn.disabled = false;
+  document.getElementById('chunks').disabled = false;
+  playBtn.disabled = false;
 }
 
 render();

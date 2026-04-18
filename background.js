@@ -120,6 +120,9 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   if (details.frameId !== 0) return; // top frame only
   const url = details.url;
+  // Never redirect our own pages — belt-and-suspenders check in case a
+  // future tweak to isPdfLikelyUrl ever matches the viewer's ?file=... .
+  if (url.startsWith(chrome.runtime.getURL(''))) return;
   if (!isPdfLikelyUrl(url)) return;
   const { openPdfsInViewer } = await chrome.storage.sync.get({ openPdfsInViewer: false });
   if (!openPdfsInViewer) return;
