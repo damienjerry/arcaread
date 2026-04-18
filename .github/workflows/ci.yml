@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node --test tests/
+
+  lint:
+    name: Static sanity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax-check every JS file
+        run: |
+          set -e
+          for f in core.js content.js background.js popup.js reader.js viewer.js tests/core.test.js; do
+            echo "-- $f"
+            node --check "$f"
+          done
+      - name: Validate manifest.json
+        run: python3 -m json.tool < manifest.json > /dev/null
+
+  package:
+    name: Build zip artifact
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build unpacked zip
+        run: |
+          zip -r focusread.zip . \
+            -x '.git/*' '.github/*' 'tests/*' 'icons/explorations.html' \
+            '*.DS_Store' 'safari/*' 'build/*' 'DerivedData/*'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: focusread-unpacked
+          path: focusread.zip
+          retention-days: 14
