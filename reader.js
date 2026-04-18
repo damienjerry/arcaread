@@ -175,33 +175,13 @@ async function getSummarizer() {
   }
 }
 
-// Break text into roughly-equal chunks at paragraph boundaries so each
-// piece fits in Chrome Nano's context window. ~3500 chars is conservative.
-function chunkText(text, maxChars = 3500) {
-  const paragraphs = text.split(/\n{2,}|(?<=\.)\s+(?=[A-Z])/g);
-  const chunks = [];
-  let current = '';
-  for (const p of paragraphs) {
-    const piece = p.trim();
-    if (!piece) continue;
-    if (current.length + piece.length + 2 > maxChars && current) {
-      chunks.push(current);
-      current = piece;
-    } else {
-      current = current ? current + '\n\n' + piece : piece;
-    }
-  }
-  if (current) chunks.push(current);
-  return chunks;
-}
-
 async function runSummarize() {
-  const text = (articleEl.textContent || '').replace(/\s+/g, ' ').trim();
-  if (!text) return;
+  const rawText = (articleEl.textContent || '').replace(/\s+/g, ' ').trim();
+  if (!rawText) return;
   summarizeBtn.disabled = true;
   summarizeBtn.textContent = 'Thinking…';
   summaryBox.hidden = false;
-  summaryText.textContent = '';
+  summaryText.textContent = 'Starting…';
 
   const { summarizer, reason } = await getSummarizer();
   if (!summarizer) {
@@ -212,12 +192,26 @@ async function runSummarize() {
   }
 
   try {
-    let out = await safeSummarize(summarizer, text, (msg) => {
-      summaryText.textContent = msg;
+    const cleaned = cleanForSummary(rawText);
+    // Decide how much to feed Nano in one pass. Ask the model directly
+    // when it supports measurement; otherwise use a conservative cap.
+    const cap = await inputCapChars(summarizer, cleaned);
+    const truncated = cleaned.length > cap;
+    const input = truncated ? cleaned.slice(0, cap) : cleaned;
+
+    const out = await streamingSummarize(summarizer, input, (partial) => {
+      // Render progressively so the user sees output within a second or two.
+      summaryText.textContent = partial;
     });
     summaryText.textContent = out;
     const { segments } = FocusCore.transform(out, chunkSettings);
     summaryText.innerHTML = FocusCore.toHtml(segments);
+    if (truncated) {
+      const note = document.createElement('div');
+      note.style.cssText = 'margin-top:10px;font-size:11px;color:var(--muted);font-family:-apple-system,sans-serif;font-style:italic;';
+      note.textContent = `Summarised from the first ~${Math.round(cap / 1000)}k characters of a longer article.`;
+      summaryText.appendChild(note);
+    }
   } catch (e) {
     summaryText.textContent = `Couldn't summarise: ${e.message || e}`;
   } finally {
@@ -225,6 +219,43 @@ async function runSummarize() {
     summarizeBtn.disabled = false;
     summarizeBtn.textContent = 'Summarize';
   }
+}
+
+async function inputCapChars(summarizer, text) {
+  // Summarizer.inputQuota is token-based in the spec. Measure a sample
+  // and convert. Fall back to 6000 chars if the API isn't available.
+  try {
+    if (typeof summarizer.measureInputUsage === 'function' && summarizer.inputQuota) {
+      const sample = text.slice(0, 2000);
+      const used = await summarizer.measureInputUsage(sample);
+      if (used > 0) {
+        const charsPerToken = sample.length / used;
+        return Math.floor(summarizer.inputQuota * charsPerToken * 0.9);
+      }
+    }
+  } catch {}
+  return 6000;
+}
+
+async function streamingSummarize(summarizer, text, onPartial) {
+  // Streaming makes the first words appear within a second or two,
+  // which matters more than total elapsed time for perceived speed.
+  if (typeof summarizer.summarizeStreaming === 'function') {
+    const stream = summarizer.summarizeStreaming(text);
+    let buffer = '';
+    try {
+      // Newer Chrome returns an async iterable of incremental text.
+      for await (const chunk of stream) {
+        // Some builds emit deltas, some emit the full-so-far text.
+        buffer = chunk.length > buffer.length ? chunk : buffer + chunk;
+        onPartial?.(buffer);
+      }
+      return buffer || text.slice(0, 200);
+    } catch (e) {
+      // Fallthrough to non-streaming.
+    }
+  }
+  return summarizer.summarize(text);
 }
 
 // Strip markers and chrome that waste Nano's context without adding
@@ -236,49 +267,6 @@ function cleanForSummary(text) {
     .replace(/\[[^\]]{1,24}\]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
-}
-
-// Map-reduce summarisation. One-shot when the text fits. Otherwise
-// chunk, summarise each chunk concurrently (big win vs sequential),
-// and recurse on the concatenated partials if needed.
-async function safeSummarize(summarizer, rawText, progress) {
-  const text = cleanForSummary(rawText);
-  try {
-    return await summarizer.summarize(text);
-  } catch (e) {
-    if (!/too large|too long|exceeds|context|quota/i.test(String(e))) throw e;
-  }
-  const chunks = chunkText(text);
-  if (chunks.length <= 1) {
-    return summarizer.summarize(text.slice(0, 3000));
-  }
-  progress?.(`Summarising ${chunks.length} sections in parallel…`);
-  // Concurrency cap so we don't overwhelm Nano's single shared model.
-  const MAX_PARALLEL = 4;
-  const partials = new Array(chunks.length);
-  let completed = 0;
-  async function runChunk(i) {
-    try {
-      partials[i] = await summarizer.summarize(chunks[i]);
-    } catch {
-      partials[i] = '';
-    }
-    completed++;
-    progress?.(`Summarised ${completed} of ${chunks.length} sections…`);
-  }
-  for (let i = 0; i < chunks.length; i += MAX_PARALLEL) {
-    await Promise.all(chunks.slice(i, i + MAX_PARALLEL).map((_, j) => runChunk(i + j)));
-  }
-  const good = partials.filter(Boolean);
-  if (!good.length) throw new Error('No section could be summarised');
-  if (good.length === 1) return good[0];
-  const combined = good.join('\n\n');
-  if (combined.length <= 3500) {
-    progress?.('Condensing…');
-    return summarizer.summarize(combined);
-  }
-  progress?.('Condensing…');
-  return safeSummarize(summarizer, combined, progress);
 }
 
 summarizeBtn.addEventListener('click', runSummarize);
