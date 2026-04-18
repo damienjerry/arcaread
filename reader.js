@@ -227,11 +227,22 @@ async function runSummarize() {
   }
 }
 
-// Map-reduce summarisation. If the text fits in one pass we do that
-// directly. Otherwise chunk, summarise each piece, concatenate the
-// partial summaries, then summarise the concatenation recursively.
-async function safeSummarize(summarizer, text, progress) {
-  // First try the whole thing — fastest path.
+// Strip markers and chrome that waste Nano's context without adding
+// information — citation brackets, footnote refs, stray bracketed
+// annotations (e.g. "[edit]", "[citation needed]").
+function cleanForSummary(text) {
+  return text
+    .replace(/\[\d+\]/g, '')
+    .replace(/\[[^\]]{1,24}\]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Map-reduce summarisation. One-shot when the text fits. Otherwise
+// chunk, summarise each chunk concurrently (big win vs sequential),
+// and recurse on the concatenated partials if needed.
+async function safeSummarize(summarizer, rawText, progress) {
+  const text = cleanForSummary(rawText);
   try {
     return await summarizer.summarize(text);
   } catch (e) {
@@ -239,21 +250,32 @@ async function safeSummarize(summarizer, text, progress) {
   }
   const chunks = chunkText(text);
   if (chunks.length <= 1) {
-    // Couldn't split further; truncate.
     return summarizer.summarize(text.slice(0, 3000));
   }
-  progress?.(`Summarising ${chunks.length} sections…`);
-  const partials = [];
-  for (let i = 0; i < chunks.length; i++) {
-    progress?.(`Summarising section ${i + 1} of ${chunks.length}…`);
+  progress?.(`Summarising ${chunks.length} sections in parallel…`);
+  // Concurrency cap so we don't overwhelm Nano's single shared model.
+  const MAX_PARALLEL = 4;
+  const partials = new Array(chunks.length);
+  let completed = 0;
+  async function runChunk(i) {
     try {
-      partials.push(await summarizer.summarize(chunks[i]));
-    } catch {}
+      partials[i] = await summarizer.summarize(chunks[i]);
+    } catch {
+      partials[i] = '';
+    }
+    completed++;
+    progress?.(`Summarised ${completed} of ${chunks.length} sections…`);
   }
-  if (!partials.length) throw new Error('No section could be summarised');
-  const combined = partials.join('\n\n');
+  for (let i = 0; i < chunks.length; i += MAX_PARALLEL) {
+    await Promise.all(chunks.slice(i, i + MAX_PARALLEL).map((_, j) => runChunk(i + j)));
+  }
+  const good = partials.filter(Boolean);
+  if (!good.length) throw new Error('No section could be summarised');
+  if (good.length === 1) return good[0];
+  const combined = good.join('\n\n');
   if (combined.length <= 3500) {
-    return partials.length === 1 ? partials[0] : await summarizer.summarize(combined);
+    progress?.('Condensing…');
+    return summarizer.summarize(combined);
   }
   progress?.('Condensing…');
   return safeSummarize(summarizer, combined, progress);
