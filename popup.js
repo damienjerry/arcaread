@@ -344,7 +344,7 @@ async function openInReader() {
     await chrome.tabs.create({ url });
     window.close();
   } catch (e) {
-    console.error('[FocusRead] Open in Reader failed:', e);
+    console.error('[ArcaRead] Open in Reader failed:', e);
     btn.textContent = e.message || 'Failed — try again';
     btn.title = e.message || '';
     setTimeout(() => {

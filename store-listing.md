@@ -18,7 +18,7 @@ Pick one before you upload — you can change it later but it requires a re-veri
 
 ### Extension name
 ```
-FocusRead
+ArcaRead
 ```
 
 ### Category
@@ -36,9 +36,9 @@ Read the web faster. Bionic bolding, clean reader view, on-device AI summaries, 
 ### Detailed description (Markdown-ish, up to 16,000 characters)
 
 ```
-FocusRead helps you read the web faster by bolding the first half of each word — an effect sometimes called "bionic reading" — so your eye can skip ahead without losing your place.
+ArcaRead helps you read the web faster by bolding the first half of each word — an effect sometimes called "bionic reading" — so your eye can skip ahead without losing your place.
 
-It's more than just the bolding. FocusRead ships a full reader toolkit:
+It's more than just the bolding. ArcaRead ships a full reader toolkit:
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 WHAT YOU GET
@@ -51,7 +51,7 @@ WHAT YOU GET
 
 • Per-site memory — sliders you tune for Medium remember their Medium settings; Wikipedia gets its own.
 
-• Auto-skip on app-like pages — optional; FocusRead stays quiet on Gmail, dashboards, and anything without a detectable article.
+• Auto-skip on app-like pages — optional; ArcaRead stays quiet on Gmail, dashboards, and anything without a detectable article.
 
 • Focus mode — dim every paragraph except the one you hover, to anchor your reading.
 
@@ -63,28 +63,28 @@ WHAT YOU GET
 
 • Phrase-chunking speed read — flash 1-4 word groups at 100-800 WPM, bionic still applied. Space plays, arrows step, Escape exits.
 
-• PDF reader — flip one toggle and every PDF opens in FocusRead's reader with bionic formatting.
+• PDF reader — flip one toggle and every PDF opens in ArcaRead's reader with bionic formatting.
 
 • On-device AI summary — Chrome's built-in Gemini Nano generates a TL;DR for any article. Zero API cost, zero data leaving your device.
 
 • Reading analytics — daily / all-time minutes read plus a words-per-minute estimate. Stored locally only, never synced.
 
-• Keyboard shortcut — Cmd/Ctrl+Shift+F toggles FocusRead for the current site.
+• Keyboard shortcut — Cmd/Ctrl+Shift+F toggles ArcaRead for the current site.
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 PRIVACY
 
-FocusRead doesn't ship any data off your device. Ever.
+ArcaRead doesn't ship any data off your device. Ever.
 
 • Content scripts read text nodes to bold their prefixes. They do not transmit any of that text anywhere.
 
-• Settings sync across your signed-in Chrome profiles via Chrome's standard sync. FocusRead itself does not see or receive your settings.
+• Settings sync across your signed-in Chrome profiles via Chrome's standard sync. ArcaRead itself does not see or receive your settings.
 
 • Reading-time and WPM stats live on this machine only, never synced.
 
 • AI summaries use Chrome's on-device Gemini Nano. Article text is passed to Nano locally; nothing leaves your computer. If Nano isn't available, the button shows a clear "not available" message — there is no network fallback.
 
-• FocusRead makes no requests to any server operated by the author. No analytics SDK, no crash reporter, no telemetry.
+• ArcaRead makes no requests to any server operated by the author. No analytics SDK, no crash reporter, no telemetry.
 
 Full source is open on GitHub: https://github.com/damienjerry/focusread
 
@@ -98,7 +98,7 @@ Safari: packaged via Apple's web-extension converter (see README).
 ━━━━━━━━━━━━━━━━━━━━━━━
 FREE
 
-FocusRead is free and open source (MIT licence) on all browsers. Native desktop and mobile reader apps are a separate paid product, released under a different repo.
+ArcaRead is free and open source (MIT licence) on all browsers. Native desktop and mobile reader apps are a separate paid product, released under a different repo.
 
 Open source, privacy-respecting, and built by a human who reads a lot.
 ```
