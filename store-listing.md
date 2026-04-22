@@ -86,7 +86,7 @@ ArcaRead doesn't ship any data off your device. Ever.
 
 • ArcaRead makes no requests to any server operated by the author. No analytics SDK, no crash reporter, no telemetry.
 
-Full source is open on GitHub: https://github.com/damienjerry/focusread
+Full source is open on GitHub: https://github.com/damienjerry/arcaread
 
 ━━━━━━━━━━━━━━━━━━━━━━━
 BROWSERS

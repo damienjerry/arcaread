@@ -172,14 +172,14 @@
   </a>
   <p style="margin-top: 10px; color: var(--muted); font-size: 13px;">Chrome blocks some combos when another extension claims them. Assign your own at <code style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">chrome://extensions/shortcuts</code>.</p>
 
-  <a class="try" href="https://en.wikipedia.org/wiki/Bionic_reading" target="_blank">
+  <a class="try" id="tryArticle" href="https://en.wikipedia.org/wiki/Bionic_reading" target="_blank" rel="noopener noreferrer">
     Try it on a real article
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </a>
 
   <p class="footer">
     Built privately. Settings live in Chrome sync; reading analytics stay local to this machine.
-    <a href="https://github.com/damienjerry/focusread" target="_blank">Source on GitHub →</a>
+    <a id="sourceLink" href="https://github.com/damienjerry/arcaread" target="_blank" rel="noopener noreferrer">Source on GitHub →</a>
   </p>
 </main>
 <script src="core.js"></script>
@@ -205,6 +205,19 @@
       chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
     }
   });
+
+  // External links from chrome-extension:// pages can get intercepted
+  // (ad blockers, policies) and mis-routed as downloads. Route through
+  // chrome.tabs.create which always opens in a normal tab.
+  function openExternal(e) {
+    const url = e.currentTarget.getAttribute('href');
+    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+      e.preventDefault();
+      chrome.tabs.create({ url });
+    }
+  }
+  document.getElementById('tryArticle')?.addEventListener('click', openExternal);
+  document.getElementById('sourceLink')?.addEventListener('click', openExternal);
 </script>
 </body>
 </html>
