@@ -2,145 +2,184 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Welcome to FocusRead</title>
+<title>Welcome to ArcaRead</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #faf7f0;
+    --paper: #faf7f0;
     --surface: #ffffff;
-    --fg: #1f1c18;
+    --ink: #1f1c18;
+    --ink-2: #3a342d;
     --muted: #78726a;
-    --border: #e4ddd0;
-    --accent: #2d7a55;
+    --hairline: #e4ddd0;
+    --sage: #2d7a55;
+    --mint: #7DCFA6;
   }
   * { box-sizing: border-box; }
   html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--fg);
+    margin: 0; padding: 0;
+    background: var(--paper); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
-  main {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 56px 32px 96px;
+  main { max-width: 760px; margin: 0 auto; padding: 72px 32px 120px; }
+  h1 {
+    font-family: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+    font-size: 68px; letter-spacing: -0.02em; margin: 0 0 6px;
+    font-weight: 400; line-height: 1;
   }
-  h1 { font-size: 36px; letter-spacing: -0.5px; margin: 0 0 4px; }
-  h1 b { font-weight: 800; }
-  h2 { font-size: 18px; font-weight: 600; margin: 32px 0 8px; }
-  .tagline { font-size: 17px; color: var(--muted); margin: 0 0 40px; }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-bottom: 14px;
-  }
-  .card-row { display: flex; gap: 16px; align-items: flex-start; }
-  .card-icon {
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    background: rgba(45, 122, 85, 0.12);
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 16px;
-  }
-  .card h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
-  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  h1 b { font-weight: 700; }
+  h2 { font-size: 13px; font-weight: 600; margin: 44px 0 14px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+  .tagline { font-size: 20px; color: var(--ink-2); margin: 0 0 36px; line-height: 1.45; max-width: 560px; }
   .preview {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 24px 28px;
-    margin: 24px 0 32px;
-    font-size: 18px;
-    line-height: 1.7;
-    font-family: Georgia, 'Iowan Old Style', serif;
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin: 0 0 32px;
+    font-family: 'Iowan Old Style', Georgia, serif;
+    font-size: 20px; line-height: 1.7;
+    color: var(--ink);
   }
   .preview b { font-weight: 800; color: #000; }
-  kbd {
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1px 6px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 13px;
-    color: var(--fg);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    padding: 20px 22px;
+    transition: border-color .2s;
   }
-  .footer { color: var(--muted); font-size: 13px; margin-top: 48px; }
-  .footer a { color: var(--accent); text-decoration: none; }
+  .card:hover { border-color: var(--sage); }
+  .card-row { display: flex; gap: 14px; align-items: flex-start; }
+  .card-icon {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--sage) 14%, transparent);
+    color: var(--sage);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif;
+    font-weight: 700; font-size: 17px;
+  }
+  .card h3 { margin: 0 0 4px; font-size: 14px; font-weight: 600; letter-spacing: -0.005em; }
+  .card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+  .kbd {
+    display: inline-flex; align-items: center;
+    padding: 3px 8px; border-radius: 5px;
+    border: 1px solid var(--hairline); background: var(--surface);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13px; color: var(--ink-2);
+    box-shadow: 0 1px 0 var(--hairline);
+  }
+  .shortcut-row { display: flex; gap: 6px; align-items: center; margin: 20px 0 4px; font-size: 15px; color: var(--ink-2); flex-wrap: wrap; }
+  .shortcut-link {
+    display: inline-flex; gap: 8px; align-items: center;
+    padding: 10px 14px; border-radius: 8px;
+    background: var(--surface); border: 1px solid var(--hairline);
+    text-decoration: none; font-size: 14px; color: var(--ink);
+    transition: border-color .15s, background .15s;
+  }
+  .shortcut-link:hover { border-color: var(--sage); background: color-mix(in srgb, var(--sage) 5%, var(--surface)); }
+  .footer { color: var(--muted); font-size: 13px; margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hairline); }
+  .footer a { color: var(--sage); text-decoration: none; font-weight: 500; }
   .footer a:hover { text-decoration: underline; }
   .try {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 18px;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 14px;
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 24px;
+    padding: 14px 22px;
+    background: var(--ink); color: var(--paper);
+    border-radius: 10px; text-decoration: none;
+    font-weight: 600; font-size: 15px;
+    transition: filter .15s;
   }
-  .try:hover { background: #25663f; }
+  .try:hover { filter: brightness(1.15); }
+  .eyebrow {
+    display: inline-block;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--sage); font-weight: 700;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 640px) {
+    h1 { font-size: 48px; }
+    .grid { grid-template-columns: 1fr; }
+    main { padding: 48px 24px 80px; }
+  }
 </style>
 </head>
 <body>
 <main>
-  <h1><b>Foc</b>us<b>Re</b>ad</h1>
-  <p class="tagline">Read the web faster. Bolded prefixes, clean reader view, on-device summaries.</p>
+  <span class="eyebrow">Welcome · installed</span>
+  <h1><b>Arc</b>aRead</h1>
+  <p class="tagline">Read the web faster. Bolded prefixes, clean reader view, on-device summaries — all private, all yours.</p>
 
   <div class="preview" id="preview"></div>
 
   <h2>What you just got</h2>
-  <div class="card"><div class="card-row">
-    <div class="card-icon">B</div>
-    <div>
-      <h3>Bionic bolding on every page</h3>
-      <p>The first part of each word is bolded so your eye skims faster. Adjust intensity and word-length threshold per site from the popup.</p>
-    </div>
-  </div></div>
-  <div class="card"><div class="card-row">
-    <div class="card-icon">R</div>
-    <div>
-      <h3>Reader view for any article</h3>
-      <p>From the popup, click <strong>Open this page in Reader</strong> to strip the page down to its content with bionic applied, TTS playback, and phrase-chunking speed-read mode.</p>
-    </div>
-  </div></div>
-  <div class="card"><div class="card-row">
-    <div class="card-icon">P</div>
-    <div>
-      <h3>PDFs too</h3>
-      <p>Flip <strong>Open PDFs in reader</strong> in the popup and every PDF you click opens in the FocusRead reader — clean text with bionic formatting instead of a black PDF viewer.</p>
-    </div>
-  </div></div>
-  <div class="card"><div class="card-row">
-    <div class="card-icon">S</div>
-    <div>
-      <h3>On-device AI summary</h3>
-      <p>In Reader, click <strong>Summarize</strong> for a TL;DR generated by Chrome's built-in Gemini Nano. Runs locally, costs nothing, leaks nothing.</p>
-    </div>
-  </div></div>
-  <div class="card"><div class="card-row">
-    <div class="card-icon">A</div>
-    <div>
-      <h3>Accessibility toolkit</h3>
-      <p>Open the <strong>Dyslexia mode</strong> section in the popup for line-height, letter-spacing, word-spacing and an optional Lexend reading font — tuned per site.</p>
-    </div>
-  </div></div>
+  <div class="grid">
+    <div class="card"><div class="card-row">
+      <div class="card-icon">B</div>
+      <div>
+        <h3>Bionic bolding everywhere</h3>
+        <p>Bold the first half of each word so your eye skims faster. Tune intensity per site from the popup.</p>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-row">
+      <div class="card-icon">R</div>
+      <div>
+        <h3>Reader view for any article</h3>
+        <p>Five tints, paragraph TTS, and phrase-chunking speed-read at 100–800 WPM.</p>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-row">
+      <div class="card-icon">S</div>
+      <div>
+        <h3>On-device AI summary</h3>
+        <p>Gemini Nano writes a TL;DR locally. Nothing leaves your device, ever.</p>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-row">
+      <div class="card-icon">P</div>
+      <div>
+        <h3>PDFs, bionic-ified</h3>
+        <p>Flip <strong>Open PDFs in reader</strong> and every PDF opens with bionic formatting.</p>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-row">
+      <div class="card-icon">A</div>
+      <div>
+        <h3>Dyslexia toolkit</h3>
+        <p>Line-height, letter-spacing, word-spacing, plus the bundled Lexend reading font.</p>
+      </div>
+    </div></div>
+    <div class="card"><div class="card-row">
+      <div class="card-icon">F</div>
+      <div>
+        <h3>Focus mode</h3>
+        <p>Dim every paragraph except the one under your cursor. Your eye can't wander.</p>
+      </div>
+    </div></div>
+  </div>
 
   <h2>Keyboard shortcut</h2>
-  <p>Press <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> (or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> on Windows / Linux) on any page to toggle FocusRead for that site.</p>
+  <p style="margin: 0 0 10px; color: var(--ink-2); font-size: 15px;">Pick a shortcut to toggle ArcaRead on the current site.</p>
+  <a class="shortcut-link" id="openShortcuts" href="#">
+    <span class="kbd">⌘</span><span class="kbd">Shift</span><span class="kbd">F</span>
+    <span style="color: var(--muted);">Set shortcut →</span>
+  </a>
+  <p style="margin-top: 10px; color: var(--muted); font-size: 13px;">Chrome blocks some combos when another extension claims them. Assign your own at <code style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">chrome://extensions/shortcuts</code>.</p>
 
-  <a class="try" href="https://en.wikipedia.org/wiki/Bionic_reading" target="_blank">Try it on a real article →</a>
+  <a class="try" href="https://en.wikipedia.org/wiki/Bionic_reading" target="_blank">
+    Try it on a real article
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
 
   <p class="footer">
-    Built privately. Settings live in Chrome sync; reading analytics stay local to this machine. <a href="https://github.com/damienjerry/focusread" target="_blank">Source on GitHub</a>.
+    Built privately. Settings live in Chrome sync; reading analytics stay local to this machine.
+    <a href="https://github.com/damienjerry/focusread" target="_blank">Source on GitHub →</a>
   </p>
 </main>
 <script src="core.js"></script>
@@ -148,6 +187,24 @@
   const SAMPLE = 'Reading is practice, not magic. Bionic bolding anchors your eye to the front of each word so your brain fills in the rest.';
   const { segments } = FocusCore.transform(SAMPLE, { minWordLength: 4, intensity: 0.5 });
   document.getElementById('preview').innerHTML = FocusCore.toHtml(segments);
+
+  // Platform-aware kbd labels
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
+  if (!isMac) {
+    const link = document.getElementById('openShortcuts');
+    if (link) {
+      const kbds = link.querySelectorAll('.kbd');
+      if (kbds[0]) kbds[0].textContent = 'Ctrl';
+    }
+  }
+
+  // chrome:// URLs blocked in anchors — open via extension API
+  document.getElementById('openShortcuts')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+    }
+  });
 </script>
 </body>
 </html>

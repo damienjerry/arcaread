@@ -19,7 +19,7 @@
   <!-- Single-weight wordmark (renders reliably) -->
   <text x="114" y="72" fill="#1f1c18"
         font-family="Helvetica, Arial, sans-serif"
-        font-size="36" font-weight="800" letter-spacing="-0.8">FocusRead</text>
+        font-size="36" font-weight="800" letter-spacing="-0.8">ArcaRead</text>
 
   <text x="114" y="96" fill="#78726a"
         font-family="Helvetica, Arial, sans-serif"

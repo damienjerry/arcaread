@@ -57,7 +57,7 @@ chrome.commands?.onCommand.addListener(async (command) => {
   await chrome.storage.sync.set({ siteSettings: { ...siteSettings, [host]: next } });
 });
 
-// Intercept PDF navigations and send them through the FocusRead viewer.
+// Intercept PDF navigations and send them through the ArcaRead viewer.
 // Only fires when the user has opted in via openPdfsInViewer. We match
 // `.pdf` URLs by extension (and common query-string variants). The
 // viewer's "View original" button is how users escape.

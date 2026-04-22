@@ -1,6 +1,6 @@
-# FocusRead
+# ArcaRead
 
-Read the web faster. FocusRead is a Manifest V3 browser extension that applies *bionic reading* — bolding the first half of each word — to any webpage, plus ships a full Reader view with on-device AI summaries, a dyslexia toolkit, and a PDF viewer.
+Read the web faster. ArcaRead is a Manifest V3 browser extension that applies *bionic reading* — bolding the first half of each word — to any webpage, plus ships a full Reader view with on-device AI summaries, a dyslexia toolkit, and a PDF viewer.
 
 Free and open source on browsers. Native desktop / mobile apps are a separate (paid) product.
 
@@ -27,7 +27,7 @@ Free and open source on browsers. Native desktop / mobile apps are a separate (p
 - **Smart article detection** — the effect is scoped to the actual article body so nav, sidebar, footer, and ads stay plain
 - **Link-density filter** — skips blocks that are mostly hyperlinks (news feeds, tag clouds)
 - **Per-site memory** — sliders tuned for Medium remember Medium settings; Wikipedia gets its own
-- **Auto-skip on app-like pages** — optional; FocusRead stays quiet on Gmail, dashboards, and anything without a detectable article
+- **Auto-skip on app-like pages** — optional; ArcaRead stays quiet on Gmail, dashboards, and anything without a detectable article
 - **Focus mode** — dim every paragraph except the one you hover
 - **Dyslexia toolkit** — line-height, letter-spacing, word-spacing sliders + optional Lexend reading font
 - **Reader view** — clean distilled article tab with TTS playback, phrase-chunking speed-read mode, and five contrast tints (Paper / Sepia / Solarized / Dim / Night)
@@ -52,7 +52,7 @@ A Chrome Web Store listing is on the roadmap; until then, unpacked install is th
 
 ### Firefox
 
-MV3 landed in Firefox 121+. FocusRead targets the Chromium API surface; Firefox works with minor caveats (service worker semantics differ slightly). Same `about:debugging` → "Load Temporary Add-on" flow. A `web-ext` build and AMO submission is planned.
+MV3 landed in Firefox 121+. ArcaRead targets the Chromium API surface; Firefox works with minor caveats (service worker semantics differ slightly). Same `about:debugging` → "Load Temporary Add-on" flow. A `web-ext` build and AMO submission is planned.
 
 ### Safari
 
@@ -66,19 +66,19 @@ See [Safari packaging](#safari-packaging) below — one `xcrun` invocation produ
 - The preview at the top shows the current effect live as you drag the sliders.
 - **Open this page in Reader** distills the article into a dedicated reader tab.
 - In Reader: hit **▶** for TTS, **Chunks** for a speed-read (RSVP) overlay, **Summarize** for a Nano-generated TL;DR, and the tint dropdown for palette.
-- Keyboard shortcut: `Cmd+Shift+F` (or `Ctrl+Shift+F`) toggles FocusRead for the current site.
+- Keyboard shortcut: `Cmd+Shift+F` (or `Ctrl+Shift+F`) toggles ArcaRead for the current site.
 
 ---
 
 ## Privacy
 
-FocusRead does not ship any data off your device. Ever. Specifically:
+ArcaRead does not ship any data off your device. Ever. Specifically:
 
-- **Content scripts.** Yes, FocusRead runs a script on every page you visit — that's how bionic bolding works. It reads text nodes to bold their prefixes. It does not transmit any of that text.
-- **Settings.** Sliders and per-site overrides are stored in `chrome.storage.sync` so they follow you across signed-in Chrome profiles, via Google's standard sync. FocusRead does not see or receive any of that data.
+- **Content scripts.** Yes, ArcaRead runs a script on every page you visit — that's how bionic bolding works. It reads text nodes to bold their prefixes. It does not transmit any of that text.
+- **Settings.** Sliders and per-site overrides are stored in `chrome.storage.sync` so they follow you across signed-in Chrome profiles, via Google's standard sync. ArcaRead does not see or receive any of that data.
 - **Analytics.** The reading-time and WPM stats live in `chrome.storage.local` on this machine only — never synced, never sent anywhere.
 - **AI summaries.** The Summarize button uses Chrome's on-device Gemini Nano. Article text is passed to Nano locally; nothing leaves your computer. If Nano isn't available (Safari, Firefox, older Chrome), the button shows a clear "not available" message — there is no network fallback.
-- **PDF reader.** When you opt into "Open PDFs in reader", FocusRead fetches the PDF bytes from its original URL and renders them locally via PDF.js. No third party sees the fetch.
+- **PDF reader.** When you opt into "Open PDFs in reader", ArcaRead fetches the PDF bytes from its original URL and renders them locally via PDF.js. No third party sees the fetch.
 - **Network.** The extension makes no requests to any server operated by the author. No analytics SDK, no crash reporter, no telemetry.
 
 If you're still uncertain: the full source is right here. `content.js` is the only file that touches page content. `grep "fetch\|XMLHttpRequest\|sendBeacon"` shows every network call — you'll find only the PDFs you explicitly asked to open.
@@ -159,7 +159,7 @@ done
 python3 -m json.tool < manifest.json > /dev/null
 ```
 
-Changes to extension files are picked up by clicking the reload button on the FocusRead card at `chrome://extensions`. Changes to content scripts also require reloading any open tabs you want to test on — Chrome does not retroactively inject into open tabs.
+Changes to extension files are picked up by clicking the reload button on the ArcaRead card at `chrome://extensions`. Changes to content scripts also require reloading any open tabs you want to test on — Chrome does not retroactively inject into open tabs.
 
 CI runs the same three checks on every push and builds a downloadable zip artifact on the Actions tab for handing to testers.
 
@@ -178,12 +178,12 @@ Then from the repo parent directory:
 ```sh
 xcrun safari-web-extension-converter ./focusread \
   --project-location ./focusread/safari \
-  --app-name "FocusRead" \
+  --app-name "ArcaRead" \
   --bundle-identifier "com.damienjerry.focusread" \
   --copy-resources --no-open --force
 ```
 
-Open the generated `safari/FocusRead/FocusRead.xcodeproj` in Xcode, sign with your Apple ID team, build, and run. In Safari, enable **Develop → Allow unsigned extensions** or use your signed build, then flip it on under Settings → Extensions.
+Open the generated `safari/ArcaRead/ArcaRead.xcodeproj` in Xcode, sign with your Apple ID team, build, and run. In Safari, enable **Develop → Allow unsigned extensions** or use your signed build, then flip it on under Settings → Extensions.
 
 ---
 
@@ -200,6 +200,6 @@ Open the generated `safari/FocusRead/FocusRead.xcodeproj` in Xcode, sign with yo
 
 ## License
 
-FocusRead source: **MIT** — see [LICENSE](LICENSE).
+ArcaRead source: **MIT** — see [LICENSE](LICENSE).
 Lexend font (bundled under `fonts/`): **SIL Open Font License 1.1** — see `fonts/OFL.txt`.
 PDF.js (bundled under `vendor/`): **Apache 2.0**.

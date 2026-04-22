@@ -2,175 +2,186 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FocusRead</title>
+<title>ArcaRead</title>
 <style>
   :root {
-    --bg: #faf7f0;         /* warm paper cream default */
+    --bg: #faf7f0;
     --fg: #1f1c18;
     --bold: #000000;
     --muted: #78726a;
     --border: #e4ddd0;
     --link: #1558d6;
     --accent: #2d7a55;
+    --accent-light: #7DCFA6;
   }
   html.tint-sepia    { --bg: #f5ecd7; --fg: #3d2f1e; --bold: #1a1208; --muted: #8a7357; --border: #d9c9aa; --link: #8c5a1e; }
   html.tint-paper    { --bg: #ffffff; --fg: #1a1a1a; --bold: #000; --muted: #666; --border: #ddd; --link: #1558d6; }
   html.tint-solarized{ --bg: #fdf6e3; --fg: #586e75; --bold: #073642; --muted: #93a1a1; --border: #eee8d5; --link: #268bd2; }
   html.tint-dim      { --bg: #1b1917; --fg: #ededed; --bold: #ffffff; --muted: #8a8680; --border: #2f2c2a; --link: #9ec5ff; --accent: #7DCFA6; }
-  html.tint-night    { --bg: #0a0a0a; --fg: #b8b8b8; --bold: #e8e8e8; --muted: #666;    --border: #222;    --link: #6ea0e0; --accent: #7DCFA6; }
+  html.tint-night    { --bg: #0a0a0a; --fg: #b8b8b8; --bold: #e8e8e8; --muted: #666; --border: #222; --link: #6ea0e0; --accent: #7DCFA6; }
 
   * { box-sizing: border-box; }
   html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--fg);
-    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
-    font-size: 18px;
-    line-height: 1.7;
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--fg);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    font-size: 19px; line-height: 1.75;
   }
   .bar {
-    position: sticky;
-    top: 0;
-    background: var(--bg);
+    position: sticky; top: 0;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: saturate(140%) blur(12px);
+    -webkit-backdrop-filter: saturate(140%) blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 10px 20px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
+    padding: 12px 24px;
+    display: flex; gap: 12px; align-items: center;
     z-index: 10;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     font-size: 13px;
   }
-  .bar h1 { font-size: 13px; margin: 0; font-weight: 600; letter-spacing: 0.5px; color: var(--bold); font-family: inherit; }
+  .bar h1 { font-size: 14px; margin: 0; font-weight: 400; letter-spacing: -0.01em; color: var(--bold); font-family: inherit; }
   .bar h1 b { font-weight: 800; }
   .bar .src {
-    font-size: 11px;
-    color: var(--muted);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 11px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     flex: 1;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   .bar button, .bar select {
-    background: transparent;
-    color: var(--fg);
+    background: transparent; color: var(--fg);
     border: 1px solid var(--border);
-    padding: 4px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font: inherit;
-    font-size: 12px;
+    padding: 6px 12px; border-radius: 6px;
+    cursor: pointer; font: inherit; font-size: 12px;
+    transition: background .15s, border-color .15s;
   }
-  .bar button:hover:not(:disabled) { background: rgba(125, 125, 125, 0.08); }
+  .bar button:hover:not(:disabled) { background: color-mix(in srgb, var(--fg) 6%, transparent); border-color: var(--muted); }
   .bar button:disabled { opacity: 0.4; cursor: not-allowed; }
-  .bar select { padding: 4px 6px; }
+  .bar select { padding: 6px 8px; }
+  .bar #summarize { border-color: var(--accent-light); color: var(--accent); font-weight: 600; }
+  .bar #summarize:hover:not(:disabled) { background: color-mix(in srgb, var(--accent-light) 12%, transparent); }
   main {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 40px 24px 100px;
+    max-width: 720px; margin: 0 auto;
+    padding: 56px 28px 120px;
   }
-  h1.title { font-size: 32px; line-height: 1.25; margin: 0 0 8px; color: var(--bold); font-weight: 700; }
-  .meta { font-size: 13px; color: var(--muted); margin-bottom: 32px; font-family: -apple-system, sans-serif; }
-  article p, article li, article blockquote { margin-bottom: 1em; }
-  article img { max-width: 100%; height: auto; display: block; margin: 1.5em auto; border-radius: 4px; }
-  article a { color: var(--link); }
-  article blockquote { border-left: 3px solid var(--border); padding-left: 16px; color: var(--muted); font-style: italic; }
-  article h1, article h2, article h3, article h4 { color: var(--bold); font-weight: 700; line-height: 1.3; margin: 1.5em 0 0.5em; }
-  article h1 { font-size: 24px; }
-  article h2 { font-size: 22px; }
-  article h3 { font-size: 19px; }
-  article pre, article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; background: rgba(128,128,128,0.1); padding: 2px 4px; border-radius: 3px; }
-  article pre { padding: 12px; overflow-x: auto; }
+  h1.title {
+    font-family: 'Iowan Old Style', Georgia, serif;
+    font-size: 40px; line-height: 1.15; margin: 0 0 10px;
+    color: var(--bold); font-weight: 700; letter-spacing: -0.015em;
+  }
+  .meta {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 44px;
+    font-family: -apple-system, sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .meta a { color: inherit; }
+  article p, article li, article blockquote { margin-bottom: 1.1em; }
+  article img { max-width: 100%; height: auto; display: block; margin: 1.8em auto; border-radius: 6px; }
+  article a { color: var(--link); text-underline-offset: 3px; }
+  article blockquote {
+    border-left: 3px solid var(--border);
+    padding-left: 20px; color: var(--muted); font-style: italic;
+    margin-left: 0;
+  }
+  article h1, article h2, article h3, article h4 {
+    color: var(--bold); font-weight: 700; line-height: 1.3;
+    margin: 1.6em 0 0.5em; letter-spacing: -0.01em;
+  }
+  article h1 { font-size: 26px; }
+  article h2 { font-size: 23px; }
+  article h3 { font-size: 20px; }
+  article pre, article code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    background: color-mix(in srgb, var(--fg) 8%, transparent);
+    padding: 2px 5px; border-radius: 3px;
+  }
+  article pre { padding: 14px; overflow-x: auto; }
   article b, article strong { color: var(--bold); font-weight: 700; }
-  article .speaking { background: rgba(125, 207, 166, 0.18); border-radius: 3px; }
+  article .speaking {
+    background: color-mix(in srgb, var(--accent-light) 22%, transparent);
+    border-radius: 3px;
+  }
   .status { text-align: center; color: var(--muted); padding: 40px 16px; font-size: 13px; }
   .summary {
     border: 1px solid var(--border);
-    border-left: 3px solid #7DCFA6;
-    border-radius: 6px;
-    padding: 14px 18px;
-    margin: 0 0 32px;
-    font-size: 15px;
-    line-height: 1.6;
-    color: var(--fg);
-    background: rgba(125, 207, 166, 0.04);
+    border-left: 3px solid var(--accent-light);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 0 0 40px;
+    font-size: 15px; line-height: 1.6; color: var(--fg);
+    background: color-mix(in srgb, var(--accent-light) 6%, transparent);
   }
   .summary-label {
-    font-size: 10px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #7DCFA6;
-    margin-bottom: 8px;
-    font-family: -apple-system, sans-serif;
-    font-weight: 600;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px;
+    font-family: -apple-system, sans-serif; font-weight: 700;
   }
   .summary[hidden] { display: none; }
-  /* Chunk mode overlay */
+
+  /* Chunk mode overlay - always high-contrast, independent of tint */
   .chunk-view {
-    position: fixed;
-    inset: 44px 0 0 0;
-    background: var(--bg);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 40px;
-    padding: 40px;
-    z-index: 5;
+    position: fixed; inset: 0;
+    background: #faf7f0;
+    color: #1f1c18;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 48px; padding: 40px;
+    z-index: 100;
   }
+  html.tint-dim .chunk-view,
+  html.tint-night .chunk-view { background: #0f0e0d; color: #ededed; }
   .chunk-view[hidden] { display: none; }
   .chunk-display {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 56px;
+    font-family: 'Iowan Old Style', Georgia, serif;
+    font-size: clamp(42px, 6vw, 72px);
     font-weight: 400;
-    color: var(--fg);
-    text-align: center;
-    line-height: 1.2;
-    min-height: 80px;
-    max-width: 900px;
-    letter-spacing: -0.5px;
+    color: inherit;
+    text-align: center; line-height: 1.2;
+    min-height: 96px;
+    max-width: 960px;
+    letter-spacing: -0.015em;
   }
-  .chunk-display b { color: var(--bold); font-weight: 800; }
+  .chunk-display b { font-weight: 800; color: inherit; }
+  html.tint-dim .chunk-display b,
+  html.tint-night .chunk-display b { color: #ffffff; }
+  /* non-bold portions slightly muted so the bold "anchor" pops */
+  .chunk-display { opacity: 1; }
+  .chunk-display > span:not(b) { opacity: 0.55; }
   .chunk-controls {
-    display: flex;
-    gap: 14px;
-    align-items: center;
+    display: flex; gap: 14px; align-items: center;
     font-family: -apple-system, sans-serif;
-    font-size: 13px;
-    color: var(--muted);
+    font-size: 13px; color: var(--muted);
+    flex-wrap: wrap; justify-content: center;
   }
   .chunk-controls button, .chunk-controls select, .chunk-controls input {
-    background: transparent;
-    color: var(--fg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 6px 12px;
-    font: inherit;
-    cursor: pointer;
+    background: transparent; color: var(--fg);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 8px 14px; font: inherit; cursor: pointer;
   }
-  .chunk-controls .big {
-    font-size: 16px;
-    padding: 8px 16px;
-    min-width: 44px;
+  .chunk-controls button:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); }
+  .chunk-controls .big { font-size: 17px; padding: 10px 20px; min-width: 52px; }
+  .chunk-controls input[type="range"] { padding: 0; width: 140px; cursor: pointer; }
+  .chunk-progress {
+    font-family: ui-monospace, monospace; font-size: 12px;
+    color: var(--muted); font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
   }
-  .chunk-controls input[type="range"] {
-    padding: 0;
-    width: 140px;
-    cursor: pointer;
+  .err {
+    color: #b23030; padding: 14px 18px;
+    background: color-mix(in srgb, #b23030 8%, transparent);
+    border: 1px solid color-mix(in srgb, #b23030 25%, transparent);
+    border-radius: 6px; margin: 20px 24px; font-size: 13px;
   }
-  .chunk-progress { font-family: ui-monospace, monospace; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .err { color: #ff7b7b; padding: 16px; background: rgba(255,100,100,0.08); border: 1px solid rgba(255,100,100,0.3); border-radius: 4px; margin: 16px 24px; font-size: 13px; }
 </style>
 </head>
 <body>
 <div class="bar">
-  <h1><b>Foc</b>us<b>Re</b>ad</h1>
+  <h1><b>Arc</b>aRead</h1>
   <span class="src" id="src">—</span>
   <button id="play" title="Read aloud" disabled>▶</button>
   <button id="chunks" title="Speed read in chunks" disabled>Chunks</button>
-  <button id="summarize" title="On-device AI summary (Chrome Nano)" disabled>Summarize</button>
+  <button id="summarize" title="On-device AI summary (Chrome Nano)" disabled>✦ Summarise</button>
   <select id="tint" title="Tint">
     <option value="off">Paper (light)</option>
     <option value="sepia">Sepia</option>
@@ -185,7 +196,7 @@
   <h1 class="title" id="title"></h1>
   <div class="meta" id="meta"></div>
   <div class="summary" id="summary" hidden>
-    <div class="summary-label">TL;DR</div>
+    <div class="summary-label">TL;DR · On-device</div>
     <div id="summaryText"></div>
   </div>
   <article id="article"></article>
@@ -199,7 +210,7 @@
     <button id="chunkNext" title="Forward">▶</button>
     <span>WPM</span>
     <input type="range" id="chunkWpm" min="100" max="800" step="25" value="300">
-    <span id="chunkWpmVal" style="min-width: 34px; text-align: left;">300</span>
+    <span id="chunkWpmVal" style="min-width: 36px; text-align: left;">300</span>
     <span>Chunk</span>
     <select id="chunkSize">
       <option value="1">1 word</option>
