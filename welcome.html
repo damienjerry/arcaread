@@ -167,8 +167,8 @@
   <h2>Keyboard shortcut</h2>
   <p style="margin: 0 0 10px; color: var(--ink-2); font-size: 15px;">Pick a shortcut to toggle ArcaRead on the current site.</p>
   <a class="shortcut-link" id="openShortcuts" href="#">
-    <span class="kbd">⌘</span><span class="kbd">Shift</span><span class="kbd">F</span>
-    <span style="color: var(--muted);">Set shortcut →</span>
+    <span id="shortcutLabel" style="display:inline-flex;gap:6px;align-items:center;"></span>
+    <span id="shortcutCta" style="color: var(--muted);">Set shortcut →</span>
   </a>
   <p style="margin-top: 10px; color: var(--muted); font-size: 13px;">Chrome blocks some combos when another extension claims them. Assign your own at <code style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">chrome://extensions/shortcuts</code>.</p>
 
@@ -188,15 +188,47 @@
   const { segments } = FocusCore.transform(SAMPLE, { minWordLength: 4, intensity: 0.5 });
   document.getElementById('preview').innerHTML = FocusCore.toHtml(segments);
 
-  // Platform-aware kbd labels
+  // Render the ACTUAL bound shortcut. Chrome silently skips the manifest
+  // suggested_key if another extension already claimed it, so hard-coding
+  // "⌘Shift F" in the UI is a lie when the bind failed.
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
-  if (!isMac) {
-    const link = document.getElementById('openShortcuts');
-    if (link) {
-      const kbds = link.querySelectorAll('.kbd');
-      if (kbds[0]) kbds[0].textContent = 'Ctrl';
-    }
+  function renderKbd(label) {
+    const span = document.createElement('span');
+    span.className = 'kbd';
+    span.textContent = label;
+    return span;
   }
+  function renderShortcut(parts) {
+    const host = document.getElementById('shortcutLabel');
+    host.innerHTML = '';
+    for (const p of parts) host.appendChild(renderKbd(p));
+  }
+  (async function () {
+    const labelEl = document.getElementById('shortcutLabel');
+    const ctaEl = document.getElementById('shortcutCta');
+    if (!labelEl) return;
+    try {
+      const cmds = await chrome.commands.getAll();
+      const toggle = cmds.find((c) => c.name === 'toggle-site');
+      const shortcut = toggle?.shortcut || '';
+      if (shortcut) {
+        // Chrome returns combos like "⌘⇧F" or "Ctrl+Shift+F" depending on
+        // platform. Split into chips; keep native glyphs where Chrome
+        // already emits them.
+        const parts = shortcut.includes('+')
+          ? shortcut.split('+')
+          : [...shortcut];
+        renderShortcut(parts);
+        ctaEl.textContent = 'Change →';
+      } else {
+        renderShortcut([isMac ? '⌘' : 'Ctrl', 'Shift', 'F']);
+        labelEl.style.opacity = '0.45';
+        ctaEl.textContent = 'No shortcut — assign one →';
+      }
+    } catch {
+      renderShortcut([isMac ? '⌘' : 'Ctrl', 'Shift', 'F']);
+    }
+  })();
 
   // chrome:// URLs blocked in anchors — open via extension API
   document.getElementById('openShortcuts')?.addEventListener('click', (e) => {

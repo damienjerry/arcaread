@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ArcaRead",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Bold the first half of each word to speed up reading. Works on any page.",
   "permissions": ["storage", "activeTab", "webNavigation", "scripting"],
   "host_permissions": ["<all_urls>"],
@@ -24,8 +24,8 @@
   "commands": {
     "toggle-site": {
       "suggested_key": {
-        "default": "Ctrl+Shift+F",
-        "mac": "Command+Shift+F"
+        "default": "Alt+Shift+A",
+        "mac": "Alt+Shift+A"
       },
       "description": "Toggle ArcaRead on the current site"
     }
