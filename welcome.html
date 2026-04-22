@@ -3,9 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Welcome to ArcaRead</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper: #faf7f0;
@@ -183,73 +180,6 @@
   </p>
 </main>
 <script src="core.js"></script>
-<script>
-  const SAMPLE = 'Reading is practice, not magic. Bionic bolding anchors your eye to the front of each word so your brain fills in the rest.';
-  const { segments } = FocusCore.transform(SAMPLE, { minWordLength: 4, intensity: 0.5 });
-  document.getElementById('preview').innerHTML = FocusCore.toHtml(segments);
-
-  // Render the ACTUAL bound shortcut. Chrome silently skips the manifest
-  // suggested_key if another extension already claimed it, so hard-coding
-  // "⌘Shift F" in the UI is a lie when the bind failed.
-  const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
-  function renderKbd(label) {
-    const span = document.createElement('span');
-    span.className = 'kbd';
-    span.textContent = label;
-    return span;
-  }
-  function renderShortcut(parts) {
-    const host = document.getElementById('shortcutLabel');
-    host.innerHTML = '';
-    for (const p of parts) host.appendChild(renderKbd(p));
-  }
-  (async function () {
-    const labelEl = document.getElementById('shortcutLabel');
-    const ctaEl = document.getElementById('shortcutCta');
-    if (!labelEl) return;
-    try {
-      const cmds = await chrome.commands.getAll();
-      const toggle = cmds.find((c) => c.name === 'toggle-site');
-      const shortcut = toggle?.shortcut || '';
-      if (shortcut) {
-        // Chrome returns combos like "⌘⇧F" or "Ctrl+Shift+F" depending on
-        // platform. Split into chips; keep native glyphs where Chrome
-        // already emits them.
-        const parts = shortcut.includes('+')
-          ? shortcut.split('+')
-          : [...shortcut];
-        renderShortcut(parts);
-        ctaEl.textContent = 'Change →';
-      } else {
-        renderShortcut([isMac ? '⌘' : 'Ctrl', 'Shift', 'F']);
-        labelEl.style.opacity = '0.45';
-        ctaEl.textContent = 'No shortcut — assign one →';
-      }
-    } catch {
-      renderShortcut([isMac ? '⌘' : 'Ctrl', 'Shift', 'F']);
-    }
-  })();
-
-  // chrome:// URLs blocked in anchors — open via extension API
-  document.getElementById('openShortcuts')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-    }
-  });
-
-  // External links from chrome-extension:// pages can get intercepted
-  // (ad blockers, policies) and mis-routed as downloads. Route through
-  // chrome.tabs.create which always opens in a normal tab.
-  function openExternal(e) {
-    const url = e.currentTarget.getAttribute('href');
-    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-      e.preventDefault();
-      chrome.tabs.create({ url });
-    }
-  }
-  document.getElementById('tryArticle')?.addEventListener('click', openExternal);
-  document.getElementById('sourceLink')?.addEventListener('click', openExternal);
-</script>
+<script src="welcome.js"></script>
 </body>
 </html>
