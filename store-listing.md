@@ -144,7 +144,7 @@ macOS quick screenshot at exactly 1280×800: use the built-in `Cmd+Shift+4`, dra
 Chrome requires a publicly accessible URL. We ship one in the repo at `privacy.html` and host it via GitHub Pages. The URL to paste into the developer console:
 
 ```
-https://damienjerry.github.io/focusread/privacy.html
+https://damienjerry.github.io/arcaread/privacy.html
 ```
 
 Enable GitHub Pages: repo → Settings → Pages → Source: `Deploy from a branch`, Branch: `main`, Folder: `/ (root)`, Save. Takes ~2 minutes.
