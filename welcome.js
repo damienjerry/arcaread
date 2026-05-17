@@ -10,7 +10,7 @@ const SAMPLE =
     const { segments } = FocusCore.transform(SAMPLE, { minWordLength: 4, intensity: 0.5 });
     document.getElementById('preview').innerHTML = FocusCore.toHtml(segments);
   } catch (e) {
-    console.error('[ArcaRead] preview render failed:', e);
+    console.error('[Arcaread] preview render failed:', e);
   }
 })();
 

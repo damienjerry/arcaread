@@ -258,9 +258,9 @@
     if (effective.readingFont === 'lexend') {
       const fontUrl = chrome.runtime.getURL('fonts/Lexend-Variable.ttf');
       rules.push(
-        `@font-face { font-family: 'ArcaRead-Lexend'; src: url("${fontUrl}") format('truetype-variations'); font-weight: 100 900; font-display: swap; }`
+        `@font-face { font-family: 'Arcaread-Lexend'; src: url("${fontUrl}") format('truetype-variations'); font-weight: 100 900; font-display: swap; }`
       );
-      declarations.push(`font-family: 'ArcaRead-Lexend', system-ui, sans-serif !important`);
+      declarations.push(`font-family: 'Arcaread-Lexend', system-ui, sans-serif !important`);
     }
     if (effective.dyslexiaMode) {
       declarations.push(`line-height: ${effective.lineHeight} !important`);

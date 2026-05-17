@@ -1,4 +1,4 @@
-# ArcaRead — Bionic-reading browser extension
+# Arcaread — Bionic-reading browser extension
 
 <!-- ───── Orchestrator ──────────────────────────────────────────
   Scope: personal · Status: shipping (submitted Chrome Web Store, pending approval 2026-04-23)

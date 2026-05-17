@@ -1,4 +1,4 @@
-// ArcaRead — portable core transformation.
+// Arcaread — portable core transformation.
 // No DOM, no browser APIs, no dependencies. Safe to import from a content
 // script, a Node CLI, a React Native shell, a Deno script, etc.
 //
