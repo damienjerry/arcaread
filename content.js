@@ -433,11 +433,14 @@
     for (const tag of UNSAFE_TAGS) {
       clone.querySelectorAll(tag).forEach(el => el.remove());
     }
-    // Strip inline event handlers and javascript: hrefs.
+    // Strip inline event handlers, javascript:/data: navigation attrs, and formaction.
+    const UNSAFE_URL_RE = /^(javascript:|data:)/i;
     clone.querySelectorAll('*').forEach(el => {
       for (const attr of Array.from(el.attributes)) {
-        if (attr.name.toLowerCase().startsWith('on')) el.removeAttribute(attr.name);
-        if ((attr.name === 'href' || attr.name === 'src') && /^javascript:/i.test(attr.value)) {
+        const name = attr.name.toLowerCase();
+        if (name.startsWith('on')) { el.removeAttribute(attr.name); continue; }
+        if (name === 'formaction') { el.removeAttribute(attr.name); continue; }
+        if ((name === 'href' || name === 'src' || name === 'action') && UNSAFE_URL_RE.test(attr.value)) {
           el.removeAttribute(attr.name);
         }
       }
