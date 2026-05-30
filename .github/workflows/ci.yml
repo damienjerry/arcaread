@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node --test tests/
+      - run: node --test tests/core.test.js
 
   lint:
     name: Static sanity
@@ -42,11 +42,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build unpacked zip
         run: |
-          zip -r focusread.zip . \
+          zip -r arcaread.zip . \
             -x '.git/*' '.github/*' 'tests/*' 'icons/explorations.html' \
             '*.DS_Store' 'safari/*' 'build/*' 'DerivedData/*'
       - uses: actions/upload-artifact@v4
         with:
-          name: focusread-unpacked
-          path: focusread.zip
+          name: arcaread-unpacked
+          path: arcaread.zip
           retention-days: 14

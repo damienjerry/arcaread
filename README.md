@@ -66,7 +66,7 @@ See [Safari packaging](#safari-packaging) below — one `xcrun` invocation produ
 - The preview at the top shows the current effect live as you drag the sliders.
 - **Open this page in Reader** distills the article into a dedicated reader tab.
 - In Reader: hit **▶** for TTS, **Chunks** for a speed-read (RSVP) overlay, **Summarize** for a Nano-generated TL;DR, and the tint dropdown for palette.
-- Keyboard shortcut: `Cmd+Shift+F` (or `Ctrl+Shift+F`) toggles Arcaread for the current site.
+- Keyboard shortcut: `Alt+Shift+A` (or `Opt+Shift+A` on Mac) toggles Arcaread for the current site.
 
 ---
 

@@ -177,11 +177,11 @@
 </head>
 <body>
 <div class="bar">
-  <h1><b>Arc</b>aRead</h1>
+  <h1><b>Arc</b>aread</h1>
   <span class="src" id="src">—</span>
-  <button id="play" title="Read aloud" disabled>▶</button>
-  <button id="chunks" title="Speed read in chunks" disabled>Chunks</button>
-  <button id="summarize" title="On-device AI summary (Chrome Nano)" disabled>✦ Summarise</button>
+  <button id="play" title="Read aloud" aria-label="Read aloud" disabled>▶</button>
+  <button id="chunks" title="Speed read in chunks" aria-label="Speed read in chunks" disabled>Chunks</button>
+  <button id="summarize" title="On-device AI summary (Chrome Nano)" aria-label="Summarise with on-device AI" disabled>✦ Summarise</button>
   <select id="tint" title="Tint">
     <option value="off">Paper (light)</option>
     <option value="sepia">Sepia</option>
@@ -205,9 +205,9 @@
   <div class="chunk-progress"><span id="chunkPos">0</span> / <span id="chunkTotal">0</span></div>
   <div class="chunk-display" id="chunkDisplay"></div>
   <div class="chunk-controls">
-    <button id="chunkBack" title="Back">◀</button>
-    <button id="chunkPlay" class="big" title="Play/pause">▶</button>
-    <button id="chunkNext" title="Forward">▶</button>
+    <button id="chunkBack" title="Back" aria-label="Previous chunk">◀</button>
+    <button id="chunkPlay" class="big" title="Play/pause" aria-label="Play">▶</button>
+    <button id="chunkNext" title="Forward" aria-label="Next chunk">▶</button>
     <span>WPM</span>
     <input type="range" id="chunkWpm" min="100" max="800" step="25" value="300">
     <span id="chunkWpmVal" style="min-width: 36px; text-align: left;">300</span>

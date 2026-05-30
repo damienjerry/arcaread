@@ -166,7 +166,7 @@ The developer console asks you to justify each permission. Copy these:
 ## Submission checklist (in order)
 
 - [ ] Sign up at chrome.google.com/webstore/devconsole, pay $5, verify identity
-- [ ] Download the latest `focusread-unpacked.zip` from GitHub Actions (Actions tab → latest green run → "Artifacts" → `focusread-unpacked`)
+- [ ] Download the latest `arcaread.zip` from GitHub Actions (Actions tab → latest green run → "Artifacts" → `arcaread-unpacked`)
 - [ ] Enable GitHub Pages for the repo (Settings → Pages)
 - [ ] Upload zip on the developer console → "New item"
 - [ ] Paste in the store listing fields above
