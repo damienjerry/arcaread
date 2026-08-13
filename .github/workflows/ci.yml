@@ -15,7 +15,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node --test tests/core.test.js
+      # Glob rather than a named file so a new tests/*.test.js is picked up
+      # automatically instead of silently never running.
+      - run: node --test tests/*.test.js
 
   lint:
     name: Static sanity
@@ -28,7 +30,11 @@ jobs:
       - name: Syntax-check every JS file
         run: |
           set -e
-          for f in core.js content.js background.js popup.js reader.js viewer.js tests/core.test.js; do
+          # Discovered rather than hardcoded: the previous fixed list silently
+          # skipped welcome.js when it was added, so a new file could ship
+          # without ever being parsed.
+          shopt -s nullglob
+          for f in *.js tests/*.js; do
             echo "-- $f"
             node --check "$f"
           done

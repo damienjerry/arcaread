@@ -36,7 +36,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["core.js", "content.js"],
+      "js": ["core.js", "url-safety.js", "content.js"],
       "run_at": "document_idle",
       "all_frames": true,
       "match_about_blank": true,

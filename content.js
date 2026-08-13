@@ -435,23 +435,10 @@
     }
     // Strip inline event handlers, javascript:/data: navigation attrs, and formaction.
     //
-    // Test the value the URL parser will see, not the raw attribute. Before a
-    // scheme is parsed the browser removes every tab/CR/LF anywhere in the
-    // string and trims leading C0 controls and spaces, so a raw-value test
-    // lets " javascript:..." and "java<TAB>script:..." through — and the
-    // absolutize pass below then rebuilds them into working javascript: URLs
-    // via new URL(). Normalise the same way first so the check can't be
-    // stepped around.
-    const UNSAFE_URL_RE = /^(javascript:|data:)/;
-    function normalizeUrlValue(value) {
-      return String(value)
-        .replace(/[\t\n\r]/g, '')
-        .replace(/^[\x00-\x20]+/, '')
-        .toLowerCase();
-    }
-    function isUnsafeUrl(value) {
-      return UNSAFE_URL_RE.test(normalizeUrlValue(value));
-    }
+    // isUnsafeUrl tests the value the URL parser will see rather than the raw
+    // attribute — see url-safety.js for why that distinction matters, and
+    // tests/url-safety.test.js for the bypass vectors it covers.
+    const isUnsafeUrl = UrlSafety.isUnsafeUrl;
     clone.querySelectorAll('*').forEach(el => {
       for (const attr of Array.from(el.attributes)) {
         const name = attr.name.toLowerCase();
