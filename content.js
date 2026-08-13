@@ -434,13 +434,30 @@
       clone.querySelectorAll(tag).forEach(el => el.remove());
     }
     // Strip inline event handlers, javascript:/data: navigation attrs, and formaction.
-    const UNSAFE_URL_RE = /^(javascript:|data:)/i;
+    //
+    // Test the value the URL parser will see, not the raw attribute. Before a
+    // scheme is parsed the browser removes every tab/CR/LF anywhere in the
+    // string and trims leading C0 controls and spaces, so a raw-value test
+    // lets " javascript:..." and "java<TAB>script:..." through — and the
+    // absolutize pass below then rebuilds them into working javascript: URLs
+    // via new URL(). Normalise the same way first so the check can't be
+    // stepped around.
+    const UNSAFE_URL_RE = /^(javascript:|data:)/;
+    function normalizeUrlValue(value) {
+      return String(value)
+        .replace(/[\t\n\r]/g, '')
+        .replace(/^[\x00-\x20]+/, '')
+        .toLowerCase();
+    }
+    function isUnsafeUrl(value) {
+      return UNSAFE_URL_RE.test(normalizeUrlValue(value));
+    }
     clone.querySelectorAll('*').forEach(el => {
       for (const attr of Array.from(el.attributes)) {
         const name = attr.name.toLowerCase();
         if (name.startsWith('on')) { el.removeAttribute(attr.name); continue; }
         if (name === 'formaction') { el.removeAttribute(attr.name); continue; }
-        if ((name === 'href' || name === 'src' || name === 'action') && UNSAFE_URL_RE.test(attr.value)) {
+        if ((name === 'href' || name === 'src' || name === 'action') && isUnsafeUrl(attr.value)) {
           el.removeAttribute(attr.name);
         }
       }
@@ -448,12 +465,23 @@
     // Drop nav / complementary / hidden stuff that slipped inside.
     clone.querySelectorAll('nav, aside, footer, dialog, [role="navigation"], [role="complementary"], [role="banner"], [role="dialog"], [role="alertdialog"], [role="tooltip"], [aria-hidden="true"], [hidden]').forEach(el => el.remove());
     // Absolutize image srcs so they still resolve from the reader origin.
+    // Re-check the resolved URL: new URL() normalises away the tabs/newlines
+    // and leading spaces that hide a scheme, so it is the step that could
+    // otherwise hand back a dangerous URL the loop above already cleared.
     clone.querySelectorAll('img[src]').forEach(img => {
-      try { img.src = new URL(img.getAttribute('src'), location.href).href; } catch {}
+      try {
+        const abs = new URL(img.getAttribute('src'), location.href).href;
+        if (isUnsafeUrl(abs)) img.removeAttribute('src');
+        else img.src = abs;
+      } catch {}
       img.removeAttribute('srcset');
     });
     clone.querySelectorAll('a[href]').forEach(a => {
-      try { a.href = new URL(a.getAttribute('href'), location.href).href; } catch {}
+      try {
+        const abs = new URL(a.getAttribute('href'), location.href).href;
+        if (isUnsafeUrl(abs)) a.removeAttribute('href');
+        else a.href = abs;
+      } catch {}
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });
