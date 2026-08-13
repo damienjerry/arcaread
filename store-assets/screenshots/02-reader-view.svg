@@ -1,0 +1,79 @@
+<svg viewBox="0 0 1280 800" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .ink { fill: #1f1c18; }
+    .body { fill: #3a342d; }
+    .faded { fill: #8b867e; }
+    .muted { fill: #78726a; }
+    .sage { fill: #2d7a55; }
+    .mint { fill: #7DCFA6; }
+    .bold { font-weight: 700; }
+  </style>
+
+  <!-- window bg paper -->
+  <rect width="1280" height="800" fill="#f4eed9"/>
+  <rect x="40" y="40" width="1200" height="720" rx="14" fill="#faf7f0"/>
+
+  <!-- chrome window bar -->
+  <rect x="40" y="40" width="1200" height="44" rx="14" fill="#e8e1cf"/>
+  <rect x="40" y="68" width="1200" height="16" fill="#e8e1cf"/>
+  <circle cx="66" cy="62" r="6" fill="#ed6a5e"/>
+  <circle cx="86" cy="62" r="6" fill="#f5bf4f"/>
+  <circle cx="106" cy="62" r="6" fill="#62c554"/>
+
+  <!-- ArcaRead sticky bar -->
+  <rect x="40" y="84" width="1200" height="58" fill="#faf7f0" opacity="0.95"/>
+  <line x1="40" y1="142" x2="1240" y2="142" stroke="#e4ddd0"/>
+  <g transform="translate(72, 118)" font-family="-apple-system, sans-serif" font-size="14" class="ink">
+    <text xml:space="preserve"><tspan font-weight="800">Arc</tspan><tspan>aRead</tspan></text>
+  </g>
+  <text xml:space="preserve" x="164" y="118" font-family="ui-monospace, Menlo, monospace" font-size="11" class="muted">arstechnica.com/gadgets/2026/04/inside-the-new-reading-apps</text>
+
+  <!-- bar buttons -->
+  <g font-family="-apple-system, sans-serif" font-size="12" class="ink">
+    <rect x="846" y="102" width="40" height="32" rx="6" fill="none" stroke="#e4ddd0"/>
+    <text xml:space="preserve" x="866" y="122" text-anchor="middle">▶</text>
+    <rect x="894" y="102" width="72" height="32" rx="6" fill="none" stroke="#e4ddd0"/>
+    <text xml:space="preserve" x="930" y="122" text-anchor="middle">Chunks</text>
+    <rect x="974" y="102" width="124" height="32" rx="6" fill="none" stroke="#7DCFA6"/>
+    <text xml:space="preserve" x="1036" y="122" text-anchor="middle" class="sage" font-weight="600">✦ Summarise</text>
+    <rect x="1106" y="102" width="106" height="32" rx="6" fill="none" stroke="#e4ddd0"/>
+    <text xml:space="preserve" x="1159" y="122" text-anchor="middle">Paper ▾</text>
+  </g>
+
+  <!-- article column -->
+  <g transform="translate(300, 182)" font-family="'Iowan Old Style', Georgia, serif">
+    <!-- title -->
+    <text xml:space="preserve" x="0" y="0" font-size="38" class="ink" font-weight="700" letter-spacing="-0.01em">Inside the new reading apps</text>
+    <text xml:space="preserve" x="0" y="28" font-family="-apple-system, sans-serif" font-size="12" class="muted" letter-spacing="0.02em">ArsTechnica · 6 min read · Sam Machkovech</text>
+
+    <!-- summary box -->
+    <g transform="translate(0, 56)">
+      <rect width="680" height="92" rx="8" fill="#eff8f2" stroke="#e4ddd0"/>
+      <rect x="0" y="0" width="3" height="92" class="mint"/>
+      <text xml:space="preserve" x="20" y="22" font-family="-apple-system, sans-serif" font-size="10" class="sage" font-weight="700" letter-spacing="0.14em">ON-DEVICE AI SUMMARY</text>
+      <g font-size="15" transform="translate(20, 46)">
+        <text xml:space="preserve"><tspan class="bold ink">Bio</tspan><tspan class="faded">nic</tspan><tspan class="body"> reading </tspan><tspan class="bold ink">app</tspan><tspan class="faded">s</tspan><tspan class="body"> have </tspan><tspan class="bold ink">mat</tspan><tspan class="faded">ured</tspan><tspan class="body"> into </tspan><tspan class="bold ink">fir</tspan><tspan class="faded">st-class</tspan><tspan class="body"> tools.</tspan></text>
+        <text xml:space="preserve" y="22"><tspan class="body">The </tspan><tspan class="bold ink">Chr</tspan><tspan class="faded">ome</tspan><tspan class="body"> ecosystem now </tspan><tspan class="bold ink">off</tspan><tspan class="faded">ers</tspan><tspan class="body"> native </tspan><tspan class="bold ink">sum</tspan><tspan class="faded">marisation</tspan><tspan class="body"> with Gemini Nano.</tspan></text>
+      </g>
+    </g>
+
+    <!-- article body -->
+    <g transform="translate(0, 182)" font-size="19">
+      <text xml:space="preserve"><tspan class="bold ink">Rea</tspan><tspan class="faded">ding</tspan><tspan class="body"> online has </tspan><tspan class="bold ink">alw</tspan><tspan class="faded">ays</tspan><tspan class="body"> been a </tspan><tspan class="bold ink">com</tspan><tspan class="faded">promise.</tspan><tspan class="body"> Sidebars,</tspan></text>
+      <text xml:space="preserve" y="32"><tspan class="bold ink">ban</tspan><tspan class="faded">ners,</tspan><tspan class="body"> and </tspan><tspan class="bold ink">pop</tspan><tspan class="faded">ups</tspan><tspan class="body"> make every page </tspan><tspan class="bold ink">har</tspan><tspan class="faded">der</tspan><tspan class="body"> to parse than it</tspan></text>
+      <text xml:space="preserve" y="64"><tspan class="body">needs to be. </tspan><tspan class="bold ink">Rea</tspan><tspan class="faded">der</tspan><tspan class="body"> views solve part of that — they </tspan><tspan class="bold ink">hid</tspan><tspan class="faded">e</tspan></text>
+      <text xml:space="preserve" y="96"><tspan class="body">the </tspan><tspan class="bold ink">chr</tspan><tspan class="faded">ome</tspan><tspan class="body"> so you can </tspan><tspan class="bold ink">foc</tspan><tspan class="faded">us</tspan><tspan class="body"> on prose. Bionic typography </tspan><tspan class="bold ink">goes</tspan></text>
+      <text xml:space="preserve" y="128"><tspan class="body">one step </tspan><tspan class="bold ink">fur</tspan><tspan class="faded">ther</tspan><tspan class="body"> by </tspan><tspan class="bold ink">bol</tspan><tspan class="faded">ding</tspan><tspan class="body"> the first </tspan><tspan class="bold ink">ha</tspan><tspan class="faded">lf</tspan><tspan class="body"> of each word, turning your</tspan></text>
+      <text xml:space="preserve" y="160"><tspan class="body">eye into a </tspan><tspan class="bold ink">sca</tspan><tspan class="faded">nner</tspan><tspan class="body"> that skips ahead </tspan><tspan class="bold ink">wit</tspan><tspan class="faded">hout</tspan><tspan class="body"> losing place.</tspan></text>
+    </g>
+
+    <text xml:space="preserve" x="0" y="388" font-size="24" class="ink" font-weight="700">Why it works</text>
+    <g transform="translate(0, 404)" font-size="19">
+      <text xml:space="preserve" y="24"><tspan class="bold ink">Your</tspan><tspan class="body"> brain is a </tspan><tspan class="bold ink">pre</tspan><tspan class="faded">diction</tspan><tspan class="body"> engine. The first few letters </tspan><tspan class="bold ink">tell</tspan></text>
+      <text xml:space="preserve" y="56"><tspan class="body">it most of what it needs — the </tspan><tspan class="bold ink">res</tspan><tspan class="faded">t</tspan><tspan class="body"> is </tspan><tspan class="bold ink">fil</tspan><tspan class="faded">ler.</tspan></text>
+    </g>
+  </g>
+
+  <!-- caption -->
+  <text xml:space="preserve" x="640" y="756" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="15" class="ink" font-weight="600">Clean Reader view + on-device AI summary (Gemini Nano)</text>
+</svg>

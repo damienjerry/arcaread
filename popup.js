@@ -17,18 +17,6 @@ const DEFAULTS = {
   siteSettings: {}
 };
 
-// Which keys are stored per-site (in siteSettings[host]) vs global-only.
-const PER_SITE_KEYS = [
-  'enabled',          // per-site: active on this site
-  'smartMode',
-  'minWordLength',
-  'fontSizeThreshold',
-  'fontSizeMax'
-];
-// "enabled" has a dedicated global master switch; per-site "enabled"
-// is read from siteSettings[host].enabled — these don't collide
-// because the popup maps them to separate UI controls.
-
 let hostname = null;
 let data = null;
 
@@ -203,6 +191,7 @@ function todayKey() {
 async function init() {
   hostname = await getCurrentHostname();
   $('hostname').textContent = hostname || '(not a web page)';
+  $('hostnameFull').textContent = hostname || '(not a web page)';
 
   data = { ...DEFAULTS, ...(await chrome.storage.sync.get(null)) };
 
@@ -344,7 +333,7 @@ async function openInReader() {
     await chrome.tabs.create({ url });
     window.close();
   } catch (e) {
-    console.error('[ArcaRead] Open in Reader failed:', e);
+    console.error('[Arcaread] Open in Reader failed:', e);
     btn.textContent = e.message || 'Failed — try again';
     btn.title = e.message || '';
     setTimeout(() => {

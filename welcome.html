@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Welcome to ArcaRead</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<title>Welcome to Arcaread</title>
 <style>
   :root {
     --paper: #faf7f0;
@@ -113,7 +110,7 @@
 <body>
 <main>
   <span class="eyebrow">Welcome · installed</span>
-  <h1><b>Arc</b>aRead</h1>
+  <h1><b>Arc</b>aread</h1>
   <p class="tagline">Read the web faster. Bolded prefixes, clean reader view, on-device summaries — all private, all yours.</p>
 
   <div class="preview" id="preview"></div>
@@ -165,46 +162,24 @@
   </div>
 
   <h2>Keyboard shortcut</h2>
-  <p style="margin: 0 0 10px; color: var(--ink-2); font-size: 15px;">Pick a shortcut to toggle ArcaRead on the current site.</p>
+  <p style="margin: 0 0 10px; color: var(--ink-2); font-size: 15px;">Pick a shortcut to toggle Arcaread on the current site.</p>
   <a class="shortcut-link" id="openShortcuts" href="#">
-    <span class="kbd">⌘</span><span class="kbd">Shift</span><span class="kbd">F</span>
-    <span style="color: var(--muted);">Set shortcut →</span>
+    <span id="shortcutLabel" style="display:inline-flex;gap:6px;align-items:center;"></span>
+    <span id="shortcutCta" style="color: var(--muted);">Set shortcut →</span>
   </a>
   <p style="margin-top: 10px; color: var(--muted); font-size: 13px;">Chrome blocks some combos when another extension claims them. Assign your own at <code style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace;">chrome://extensions/shortcuts</code>.</p>
 
-  <a class="try" href="https://en.wikipedia.org/wiki/Bionic_reading" target="_blank">
+  <a class="try" id="tryArticle" href="https://en.wikipedia.org/wiki/Bionic_reading" target="_blank" rel="noopener noreferrer">
     Try it on a real article
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
   </a>
 
   <p class="footer">
     Built privately. Settings live in Chrome sync; reading analytics stay local to this machine.
-    <a href="https://github.com/damienjerry/focusread" target="_blank">Source on GitHub →</a>
+    <a id="sourceLink" href="https://github.com/damienjerry/arcaread" target="_blank" rel="noopener noreferrer">Source on GitHub →</a>
   </p>
 </main>
 <script src="core.js"></script>
-<script>
-  const SAMPLE = 'Reading is practice, not magic. Bionic bolding anchors your eye to the front of each word so your brain fills in the rest.';
-  const { segments } = FocusCore.transform(SAMPLE, { minWordLength: 4, intensity: 0.5 });
-  document.getElementById('preview').innerHTML = FocusCore.toHtml(segments);
-
-  // Platform-aware kbd labels
-  const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
-  if (!isMac) {
-    const link = document.getElementById('openShortcuts');
-    if (link) {
-      const kbds = link.querySelectorAll('.kbd');
-      if (kbds[0]) kbds[0].textContent = 'Ctrl';
-    }
-  }
-
-  // chrome:// URLs blocked in anchors — open via extension API
-  document.getElementById('openShortcuts')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-      chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
-    }
-  });
-</script>
+<script src="welcome.js"></script>
 </body>
 </html>

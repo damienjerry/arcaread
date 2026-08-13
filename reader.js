@@ -452,7 +452,7 @@ async function render() {
   // One-shot: clear after reading so the session store doesn't grow.
   chrome.storage.session.remove(key);
 
-  document.title = (payload.title || 'ArcaRead') + ' — ArcaRead';
+  document.title = (payload.title || 'Arcaread') + ' — Arcaread';
   titleEl.textContent = payload.title || '';
   srcEl.textContent = payload.host || payload.url || '';
   articleEl.dataset.origin = payload.url || '';
@@ -460,7 +460,14 @@ async function render() {
   articleEl.innerHTML = payload.html || '';
   const plainText = articleEl.textContent || '';
   const mins = estimateMinutes(plainText);
-  metaEl.innerHTML = `<a href="${payload.url}" style="color: inherit">${payload.host}</a> · ${mins} min read${payload.detected ? '' : ' · (no article detected — showing page content)'}`;
+  const metaLink = document.createElement('a');
+  metaLink.href = payload.url || '';
+  metaLink.style.color = 'inherit';
+  metaLink.textContent = payload.host || payload.url || '';
+  metaEl.textContent = '';
+  metaEl.appendChild(metaLink);
+  metaEl.append(` · ${mins} min read${payload.detected ? '' : ' · (no article detected — showing page content)'}`);
+
 
   const settings = await loadSettings(payload.host);
   bionicSettings = settings;

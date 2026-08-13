@@ -258,9 +258,9 @@
     if (effective.readingFont === 'lexend') {
       const fontUrl = chrome.runtime.getURL('fonts/Lexend-Variable.ttf');
       rules.push(
-        `@font-face { font-family: 'ArcaRead-Lexend'; src: url("${fontUrl}") format('truetype-variations'); font-weight: 100 900; font-display: swap; }`
+        `@font-face { font-family: 'Arcaread-Lexend'; src: url("${fontUrl}") format('truetype-variations'); font-weight: 100 900; font-display: swap; }`
       );
-      declarations.push(`font-family: 'ArcaRead-Lexend', system-ui, sans-serif !important`);
+      declarations.push(`font-family: 'Arcaread-Lexend', system-ui, sans-serif !important`);
     }
     if (effective.dyslexiaMode) {
       declarations.push(`line-height: ${effective.lineHeight} !important`);
@@ -433,11 +433,18 @@
     for (const tag of UNSAFE_TAGS) {
       clone.querySelectorAll(tag).forEach(el => el.remove());
     }
-    // Strip inline event handlers and javascript: hrefs.
+    // Strip inline event handlers, javascript:/data: navigation attrs, and formaction.
+    //
+    // isUnsafeUrl tests the value the URL parser will see rather than the raw
+    // attribute — see url-safety.js for why that distinction matters, and
+    // tests/url-safety.test.js for the bypass vectors it covers.
+    const isUnsafeUrl = UrlSafety.isUnsafeUrl;
     clone.querySelectorAll('*').forEach(el => {
       for (const attr of Array.from(el.attributes)) {
-        if (attr.name.toLowerCase().startsWith('on')) el.removeAttribute(attr.name);
-        if ((attr.name === 'href' || attr.name === 'src') && /^javascript:/i.test(attr.value)) {
+        const name = attr.name.toLowerCase();
+        if (name.startsWith('on')) { el.removeAttribute(attr.name); continue; }
+        if (name === 'formaction') { el.removeAttribute(attr.name); continue; }
+        if ((name === 'href' || name === 'src' || name === 'action') && isUnsafeUrl(attr.value)) {
           el.removeAttribute(attr.name);
         }
       }
@@ -445,12 +452,23 @@
     // Drop nav / complementary / hidden stuff that slipped inside.
     clone.querySelectorAll('nav, aside, footer, dialog, [role="navigation"], [role="complementary"], [role="banner"], [role="dialog"], [role="alertdialog"], [role="tooltip"], [aria-hidden="true"], [hidden]').forEach(el => el.remove());
     // Absolutize image srcs so they still resolve from the reader origin.
+    // Re-check the resolved URL: new URL() normalises away the tabs/newlines
+    // and leading spaces that hide a scheme, so it is the step that could
+    // otherwise hand back a dangerous URL the loop above already cleared.
     clone.querySelectorAll('img[src]').forEach(img => {
-      try { img.src = new URL(img.getAttribute('src'), location.href).href; } catch {}
+      try {
+        const abs = new URL(img.getAttribute('src'), location.href).href;
+        if (isUnsafeUrl(abs)) img.removeAttribute('src');
+        else img.src = abs;
+      } catch {}
       img.removeAttribute('srcset');
     });
     clone.querySelectorAll('a[href]').forEach(a => {
-      try { a.href = new URL(a.getAttribute('href'), location.href).href; } catch {}
+      try {
+        const abs = new URL(a.getAttribute('href'), location.href).href;
+        if (isUnsafeUrl(abs)) a.removeAttribute('href');
+        else a.href = abs;
+      } catch {}
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
     });

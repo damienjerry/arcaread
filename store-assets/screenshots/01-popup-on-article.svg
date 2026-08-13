@@ -1,0 +1,139 @@
+<svg viewBox="0 0 1280 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .paper { fill: #faf7f0; }
+      .surface { fill: #ffffff; }
+      .ink { fill: #1f1c18; }
+      .ink-2 { fill: #3a342d; }
+      .muted { fill: #78726a; }
+      .sage { fill: #2d7a55; }
+      .mint { fill: #7DCFA6; }
+      .border { fill: #e4ddd0; }
+      .bold { font-weight: 700; fill: #1f1c18; }
+      .body { font-weight: 400; fill: #3a342d; }
+      .faded { fill: #8b867e; }
+      .label-up { font: 10px -apple-system, "Segoe UI", sans-serif; letter-spacing: 0.14em; text-transform: uppercase; fill: #78726a; font-weight: 700; }
+      .hero { font: 22px Georgia, serif; }
+    </style>
+  </defs>
+
+  <!-- bg -->
+  <rect width="1280" height="800" fill="#eee8d8"/>
+
+  <!-- window chrome -->
+  <rect x="40" y="40" width="1200" height="720" rx="14" class="paper"/>
+  <rect x="40" y="40" width="1200" height="44" rx="14" fill="#e8e1cf"/>
+  <rect x="40" y="68" width="1200" height="16" fill="#e8e1cf"/>
+  <circle cx="66" cy="62" r="6" fill="#ed6a5e"/>
+  <circle cx="86" cy="62" r="6" fill="#f5bf4f"/>
+  <circle cx="106" cy="62" r="6" fill="#62c554"/>
+  <rect x="140" y="50" width="420" height="24" rx="12" fill="#f4efde"/>
+  <text xml:space="preserve" x="160" y="67" font-family="ui-monospace, Menlo, monospace" font-size="11" class="muted">en.wikipedia.org/wiki/Bionic_reading</text>
+
+  <!-- article column -->
+  <g transform="translate(130, 130)">
+    <text xml:space="preserve" x="0" y="0" font-family="Georgia, serif" font-size="34" class="ink" font-weight="700">Bionic reading</text>
+    <text xml:space="preserve" x="0" y="30" font-family="-apple-system, sans-serif" font-size="13" class="muted">From Wikipedia, the free encyclopedia</text>
+
+    <g class="hero" transform="translate(0, 72)">
+      <text xml:space="preserve" y="0"><tspan class="bold">Bio</tspan><tspan class="faded">nic </tspan><tspan class="bold">rea</tspan><tspan class="faded">ding</tspan><tspan class="body"> is a </tspan><tspan class="bold">typ</tspan><tspan class="faded">ographic</tspan><tspan class="body"> technique </tspan><tspan class="bold">des</tspan><tspan class="faded">igned</tspan></text>
+      <text xml:space="preserve" y="34"><tspan class="body">to </tspan><tspan class="bold">gui</tspan><tspan class="faded">de</tspan><tspan class="body"> the </tspan><tspan class="bold">rea</tspan><tspan class="faded">der's</tspan><tspan class="body"> eye </tspan><tspan class="bold">thr</tspan><tspan class="faded">ough</tspan><tspan class="body"> text by </tspan><tspan class="bold">bol</tspan><tspan class="faded">ding</tspan><tspan class="body"> the first</tspan></text>
+      <text xml:space="preserve" y="68"><tspan class="bold">ha</tspan><tspan class="faded">lf</tspan><tspan class="body"> of each </tspan><tspan class="bold">wor</tspan><tspan class="faded">d.</tspan><tspan class="body"> The </tspan><tspan class="bold">bra</tspan><tspan class="faded">in</tspan><tspan class="body"> uses these </tspan><tspan class="bold">fix</tspan><tspan class="faded">ation</tspan><tspan class="body"> points as</tspan></text>
+      <text xml:space="preserve" y="102"><tspan class="bold">anc</tspan><tspan class="faded">hors,</tspan><tspan class="body"> filling in the </tspan><tspan class="bold">res</tspan><tspan class="faded">t</tspan><tspan class="body"> from </tspan><tspan class="bold">con</tspan><tspan class="faded">text</tspan><tspan class="body"> so the eye </tspan><tspan class="bold">moves</tspan><tspan class="body"> faster.</tspan></text>
+    </g>
+
+    <g class="hero" transform="translate(0, 230)">
+      <text xml:space="preserve" y="0" class="bold" font-size="22" fill="#1f1c18" font-family="Georgia, serif">History</text>
+      <text xml:space="preserve" y="40"><tspan class="bold">Swi</tspan><tspan class="faded">ss</tspan><tspan class="body"> type </tspan><tspan class="bold">des</tspan><tspan class="faded">igner</tspan><tspan class="body"> Renato Casutt </tspan><tspan class="bold">int</tspan><tspan class="faded">roduced</tspan><tspan class="body"> the term in</tspan></text>
+      <text xml:space="preserve" y="74"><tspan class="body">2016 as a </tspan><tspan class="bold">com</tspan><tspan class="faded">mercial</tspan><tspan class="body"> typesetting </tspan><tspan class="bold">ser</tspan><tspan class="faded">vice.</tspan><tspan class="body"> Browser </tspan><tspan class="bold">ext</tspan><tspan class="faded">ensions</tspan></text>
+      <text xml:space="preserve" y="108"><tspan class="body">have since </tspan><tspan class="bold">pop</tspan><tspan class="faded">ularised</tspan><tspan class="body"> the technique, </tspan><tspan class="bold">bri</tspan><tspan class="faded">nging</tspan><tspan class="body"> the </tspan><tspan class="bold">sam</tspan><tspan class="faded">e</tspan></text>
+      <text xml:space="preserve" y="142"><tspan class="bold">vis</tspan><tspan class="faded">ual</tspan><tspan class="body"> cue to </tspan><tspan class="bold">any</tspan><tspan class="body"> article you </tspan><tspan class="bold">rea</tspan><tspan class="faded">d</tspan><tspan class="body"> on the web.</tspan></text>
+    </g>
+  </g>
+
+  <!-- popup card floating top-right -->
+  <g transform="translate(860, 108)">
+    <rect x="0" y="0" width="320" height="568" rx="14" fill="#faf7f0" stroke="#e4ddd0" stroke-width="1" filter="drop-shadow(0 12px 32px rgba(0,0,0,0.15))"/>
+
+    <!-- header -->
+    <g transform="translate(20, 24)">
+      <text xml:space="preserve" x="0" y="14" font-family="-apple-system, sans-serif" font-size="16" class="ink"><tspan font-weight="800">Arc</tspan><tspan>aRead</tspan></text>
+      <rect x="190" y="0" width="90" height="22" rx="11" fill="#ffffff" stroke="#e4ddd0"/>
+      <text xml:space="preserve" x="235" y="15" font-family="ui-monospace, Menlo, monospace" font-size="10" text-anchor="middle" class="muted">wikipedia.org</text>
+    </g>
+
+    <!-- preview card -->
+    <g transform="translate(20, 68)">
+      <rect width="280" height="72" rx="10" fill="#ffffff" stroke="#e4ddd0"/>
+      <g font-family="Georgia, serif" font-size="13">
+        <text xml:space="preserve" x="16" y="26"><tspan class="bold">Rea</tspan><tspan class="faded">ding</tspan><tspan class="body"> is a </tspan><tspan class="bold">con</tspan><tspan class="faded">versation</tspan></text>
+        <text xml:space="preserve" x="16" y="46"><tspan class="body">with an </tspan><tspan class="bold">aut</tspan><tspan class="faded">hor.</tspan><tspan class="body"> The first </tspan><tspan class="bold">ha</tspan><tspan class="faded">lf</tspan></text>
+        <text xml:space="preserve" x="16" y="66"><tspan class="body">of each </tspan><tspan class="bold">wor</tspan><tspan class="faded">d</tspan><tspan class="body"> carries </tspan><tspan class="bold">mos</tspan><tspan class="faded">t.</tspan></text>
+      </g>
+    </g>
+
+    <!-- primary button -->
+    <g transform="translate(20, 156)">
+      <rect width="280" height="40" rx="10" class="sage"/>
+      <text xml:space="preserve" x="140" y="25" font-family="-apple-system, sans-serif" font-size="13" fill="#ffffff" font-weight="600" text-anchor="middle">Open this page in Reader</text>
+    </g>
+
+    <!-- rows -->
+    <g transform="translate(20, 216)" font-family="-apple-system, sans-serif">
+      <g transform="translate(0, 0)">
+        <text xml:space="preserve" x="0" y="10" font-size="13" class="ink" font-weight="500">Enabled</text>
+        <text xml:space="preserve" x="0" y="26" font-size="11" class="muted">Extension master switch</text>
+        <g transform="translate(246, 0)">
+          <rect width="34" height="20" rx="10" class="sage"/>
+          <circle cx="26" cy="10" r="8" fill="#ffffff"/>
+        </g>
+      </g>
+      <line x1="0" y1="48" x2="280" y2="48" stroke="#e4ddd0"/>
+
+      <g transform="translate(0, 64)">
+        <text xml:space="preserve" x="0" y="10" font-size="13" class="ink" font-weight="500">Smart article mode</text>
+        <text xml:space="preserve" x="0" y="26" font-size="11" class="muted">Limit to real article prose</text>
+        <g transform="translate(246, 0)">
+          <rect width="34" height="20" rx="10" class="sage"/>
+          <circle cx="26" cy="10" r="8" fill="#ffffff"/>
+        </g>
+      </g>
+      <line x1="0" y1="112" x2="280" y2="112" stroke="#e4ddd0"/>
+
+      <g transform="translate(0, 128)" font-size="12">
+        <text xml:space="preserve" x="0" y="10" class="ink" font-weight="500">Intensity</text>
+        <text xml:space="preserve" x="280" y="10" text-anchor="end" class="muted">55</text>
+        <rect x="0" y="22" width="280" height="4" rx="2" fill="#e4ddd0"/>
+        <rect x="0" y="22" width="154" height="4" rx="2" class="sage"/>
+        <circle cx="154" cy="24" r="8" class="sage"/>
+      </g>
+
+      <g transform="translate(0, 174)" font-size="12">
+        <text xml:space="preserve" x="0" y="10" class="ink" font-weight="500">Min word length</text>
+        <text xml:space="preserve" x="280" y="10" text-anchor="end" class="muted">4</text>
+        <rect x="0" y="22" width="280" height="4" rx="2" fill="#e4ddd0"/>
+        <rect x="0" y="22" width="100" height="4" rx="2" class="sage"/>
+        <circle cx="100" cy="24" r="8" class="sage"/>
+      </g>
+
+      <!-- stat tiles -->
+      <g transform="translate(0, 222)">
+        <rect width="88" height="52" rx="8" fill="#ffffff" stroke="#e4ddd0"/>
+        <text xml:space="preserve" x="10" y="18" font-size="9" class="muted" font-weight="700" letter-spacing="0.08em">TODAY</text>
+        <text xml:space="preserve" x="10" y="40" font-size="15" class="sage" font-weight="700">14m</text>
+
+        <rect x="96" y="0" width="88" height="52" rx="8" fill="#ffffff" stroke="#e4ddd0"/>
+        <text xml:space="preserve" x="106" y="18" font-size="9" class="muted" font-weight="700" letter-spacing="0.08em">ALL TIME</text>
+        <text xml:space="preserve" x="106" y="40" font-size="15" class="sage" font-weight="700">4h 12m</text>
+
+        <rect x="192" y="0" width="88" height="52" rx="8" fill="#ffffff" stroke="#e4ddd0"/>
+        <text xml:space="preserve" x="202" y="18" font-size="9" class="muted" font-weight="700" letter-spacing="0.08em">WPM</text>
+        <text xml:space="preserve" x="202" y="40" font-size="15" class="sage" font-weight="700">328</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- caption -->
+  <rect x="40" y="720" width="1200" height="40" rx="6" fill="none"/>
+  <text xml:space="preserve" x="640" y="746" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="15" class="ink" font-weight="600">Bionic bolding on any page, with per-site controls</text>
+</svg>
